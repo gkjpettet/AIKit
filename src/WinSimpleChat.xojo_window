@@ -315,7 +315,7 @@ End
 		  'Const MODEL = "claude-3-5-haiku-20241022"
 		  Const MODEL = "claude-3-7-sonnet-20250219"
 		  
-		  Chat = New AIKit.Chat(MODEL, AIKit.Providers.Anthropic, ANTHROPIC_API_KEY)
+		  Chat = New AIKit.Chat(MODEL, AIKit.Providers.Anthropic, KeySafe.AnthropicAPIKey)
 		  
 		  // Register some callbacks.
 		  Chat.APIErrorDelegate = AddressOf APIError
