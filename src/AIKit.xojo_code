@@ -17,7 +17,7 @@ Protected Module AIKit
 	#tag EndDelegateDeclaration
 
 	#tag DelegateDeclaration, Flags = &h1
-		Protected Delegate Sub MessageStarted(sender As AIKit.Chat)
+		Protected Delegate Sub MessageStarted(sender As AIKit.Chat, messageID As String, inputTokenCount As Integer)
 	#tag EndDelegateDeclaration
 
 	#tag DelegateDeclaration, Flags = &h1

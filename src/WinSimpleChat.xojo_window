@@ -311,7 +311,6 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Opening()
-		  Const ANTHROPIC_API_KEY = ""
 		  'Const MODEL = "claude-3-5-haiku-20241022"
 		  Const MODEL = "claude-3-7-sonnet-20250219"
 		  
@@ -382,10 +381,12 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub MessageStarted(sender As AIKit.Chat)
+		Protected Sub MessageStarted(sender As AIKit.Chat, messageID As String, inputTokenCount As Integer)
 		  /// A new message has begun.
 		  
 		  #Pragma Unused sender
+		  #Pragma Unused messageID
+		  #Pragma Unused inputTokenCount
 		  
 		  Messages.Text = Messages.Text + "Assistant:" + EndOfLine
 		  

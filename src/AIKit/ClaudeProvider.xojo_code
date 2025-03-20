@@ -487,9 +487,7 @@ Implements AIKit.ChatProvider
 		  End If
 		  
 		  If mOwner.MessageStartedDelegate <> Nil Then
-		    #Pragma Warning "TODO: Should we pass more data to this delegate?"
-		    mOwner.MessageStartedDelegate.Invoke(mOwner)
-		    'RaiseMessageStarted(mInputTokenCount, mOutputTokenCount, mIncomingMessageID)
+		    mOwner.MessageStartedDelegate.Invoke(mOwner, mIncomingMessageID, mInputTokenCount)
 		  End If
 		End Sub
 	#tag EndMethod
