@@ -23,6 +23,19 @@ Protected Module KeySafe
 		Private KeyFile As FolderItem
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h1, Description = 52657475726E73206D79204F6C6C616D6120656E64706F696E742E
+		#tag Getter
+			Get
+			  Var endpoints As Dictionary = ParsedJSONData.Lookup("endPoints", Nil)
+			  If endpoints = Nil Then Return ""
+			  
+			  Return endpoints.Lookup("ollama", "")
+			  
+			End Get
+		#tag EndGetter
+		Protected OllamaEndpoint As String
+	#tag EndComputedProperty
+
 	#tag ComputedProperty, Flags = &h21, Description = 52657475726E732074686520706172736564204A534F4E20646174612077697468696E206069676E6F72652F707269766174652E6A736F6E602E
 		#tag Getter
 			Get

@@ -542,6 +542,8 @@ Implements AIKit.ChatProvider
 		Sub Stop()
 		  /// If a message request is currently being handled, we cancel it.
 		  /// Preserves the conversation history.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
 		  
 		  If mConnection <> Nil Then
 		    mConnection.Disconnect

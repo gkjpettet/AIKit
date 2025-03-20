@@ -312,9 +312,11 @@ End
 	#tag Event
 		Sub Opening()
 		  'Const MODEL = "claude-3-5-haiku-20241022"
-		  Const MODEL = "claude-3-7-sonnet-20250219"
+		  'Const MODEL = "claude-3-7-sonnet-20250219"
+		  Const MODEL = "deepseek-r1:14b"
 		  
-		  Chat = New AIKit.Chat(MODEL, AIKit.Providers.Anthropic, KeySafe.AnthropicAPIKey)
+		  'Chat = New AIKit.Chat(MODEL, AIKit.Providers.Anthropic, KeySafe.AnthropicAPIKey)
+		  Chat = New AIKit.Chat(MODEL, AIKit.Providers.Ollama, "", KeySafe.OllamaEndpoint)
 		  
 		  // Register some callbacks.
 		  Chat.APIErrorDelegate = AddressOf APIError
