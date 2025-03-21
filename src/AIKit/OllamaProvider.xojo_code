@@ -92,6 +92,84 @@ Implements AIKit.ChatProvider
 		  
 		  #Pragma Warning "TODO"
 		  
+		  // Create a new user message.
+		  Var userMessage As New AIKit.ChatMessage("user", what)
+		  
+		  // Add it to the conversation history.
+		  mOwner.Messages.Add(userMessage)
+		  
+		  // Reset.
+		  mLastResponse.ResizeTo(-1)
+		  mLastThinking.ResizeTo(-1)
+		  mCurrentlyThinking = False
+		  mIsAwaitingResponse = False
+		  mMessageStarted = False
+		  
+		  // Reset timing.
+		  mMessageTimeStart = DateTime.Now
+		  mMessageTimeStop = Nil
+		  mThinkingTimeStart = Nil
+		  mThinkingTimeStop = Nil
+		  
+		  // Prepare all messages for the API call.
+		  Var messages() As Dictionary
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(msg.ToDictionary)
+		  Next msg
+		  
+		  // The system prompt is injected as the first message to the model.
+		  If mOwner.SystemPrompt <> "" Then
+		    Var systemMessage As New Dictionary("role" : "system", "content" : mOwner.SystemPrompt)
+		    messages.AddAt(0, systemMessage)
+		  End If
+		  
+		  // Create the request payload.
+		  Var payload As New Dictionary
+		  payload.Value("model") = mOwner.ModelName
+		  payload.Value("messages") = messages
+		  payload.Value("stream") = False
+		  If mOwner.KeepAlive Then
+		    payload.Value("keep_alive") = "-1"
+		  Else
+		    payload.Value("keep_alive") = mOwner.KeepAliveMinutes.ToString + "m"
+		  End If
+		  
+		  // Additional payload options.
+		  Var options As New Dictionary
+		  options.Value("temperature") = mOwner.Temperature
+		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
+		  payload.Value("options") = options
+		  
+		  
+		  // Send the request synchronously to the Ollama API.
+		  Try
+		    Var connection As New URLConnection
+		    
+		    // Create the JSON payload.
+		    Var jsonPayload As String = GenerateJSON(payload)
+		    
+		    // Set the content of the request.
+		    connection.SetRequestContent(jsonPayload, "application/json")
+		    
+		    // Send it.
+		    mIsAwaitingResponse = True
+		    Var responseJSON As String
+		    Try
+		      responseJSON = connection.SendSync("POST", mEndPoint + ENDPOINT_CHAT, timeout)
+		      Return ProcessSynchronousResponse(responseJSON)
+		    Catch e As NetworkException
+		      If mOwner.APIErrorDelegate <> Nil Then
+		        mOwner.APIErrorDelegate.Invoke(mOwner, e.Message)
+		      Else
+		        Raise New AIKit.APIException(e.Message)
+		      End If
+		    End Try
+		    
+		  Catch e As RuntimeException
+		    e.Message = "API request error: " + e.Message
+		    Raise e
+		  End Try
+		  
 		End Function
 	#tag EndMethod
 
@@ -367,6 +445,59 @@ Implements AIKit.ChatProvider
 		  End If
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 50726F63657373657320746865204A534F4E2072657475726E65642066726F6D20746865204F6C6C616D612041504920666F7220612073796E6368726F6E6F7573206D65737361676520726571756573742E2052657475726E732061206043686174526573706F6E736560206F626A6563742E
+		Private Function ProcessSynchronousResponse(responseJSON As String) As AIKit.ChatResponse
+		  /// Processes the JSON returned from the Ollama API for a synchronous message request.
+		  /// Returns a `ChatResponse` object.
+		  
+		  // Parse the JSON to a dictionary.
+		  Var data As Dictionary
+		  Try
+		    data = ParseJSON(responseJSON)
+		  Catch e As JSONException
+		    If mOwner.APIErrorDelegate <> Nil Then
+		      mOwner.APIErrorDelegate.Invoke(mOwner, "Invalid JSON received.")
+		    Else
+		      Raise New AIKit.APIException(e.Message)
+		    End If
+		  End Try
+		  
+		  // Get the content.
+		  Var messageDict As Dictionary = data.Lookup("message", Nil)
+		  Var thinkingContent As String
+		  Var messageContent As String
+		  If messageDict <> Nil Then
+		    If messageDict.HasKey("content") Then
+		      messageContent = messageDict.Value("content").StringValue.Trim
+		      // Thinking content?
+		      If messageContent.BeginsWith("<think>") Then
+		        Var thinkEnd As Integer = messageContent.IndexOf("</think>")
+		        Var rawThinking As String
+		        If thinkEnd <> -1 Then
+		          rawThinking = messageContent.Left(thinkEnd + 9) // +9 accounts for </think>
+		          messageContent = messageContent.Replace(rawThinking, "").Trim
+		          thinkingContent = rawThinking.Right(rawThinking.Length - 7) // Remove leading <think>
+		          thinkingContent = thinkingContent.Left(thinkingContent.Length - 9).Trim // Remove trailing </think>
+		        End If
+		      End If
+		    End If
+		  End If
+		  
+		  // The Ollama API doesn't provide a way to determine how long the model spent thinking
+		  // when making a synchronous call. We will therefore set the thinking time to 0 and the message
+		  // time will reflect both thinking and the actual message.
+		  mThinkingTimeStop = Nil
+		  mMessageTimeStop = DateTime.Now
+		  
+		  Var inputTokens As Integer = data.Lookup("prompt_eval_count", 0)
+		  Var outputTokens As Integer = data.Lookup("eval_count", 0)
+		  
+		  Return New AIKit.ChatResponse(messageContent, thinkingContent, mMessageTimeStart, mMessageTimeStop, _
+		  inputTokens, outputTokens, mThinkingTimeStart, mThinkingTimeStop)
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 48616E646C657320746865206172726976616C206F66206E657720646174612066726F6D20616E20616374697665204F6C6C616D612041504920636F6E6E656374696F6E2E
