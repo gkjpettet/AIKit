@@ -326,9 +326,10 @@ End
 		  Chat.MessageFinishedDelegate = AddressOf MessageFinished
 		  Chat.ThinkingReceivedDelegate = AddressOf ThinkingReceived
 		  
-		  Chat.ShouldThink = True
-		  Chat.MaxThinkingBudget = 1024
-		  Var response As AIKit.ChatResponse = Chat.Ask("why is the sky blue?", 1)
+		  'Chat.ShouldThink = True
+		  'Chat.MaxThinkingBudget = 1024
+		  
+		  Var response As AIKit.ChatResponse = Chat.Ask("why is the sky blue?")
 		  Break
 		End Sub
 	#tag EndEvent
