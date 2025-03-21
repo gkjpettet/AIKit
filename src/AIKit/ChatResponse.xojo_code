@@ -14,6 +14,16 @@ Protected Class ChatResponse
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 52657475726E7320616E20656D707479206368617420726573706F6E7365207769746820616C6C204461746554696D6573206265696E67206E6F772E20546865736520617265207573656420746F20726570726573656E74206120726573706F6E7365206661696C7572652E
+		Shared Function Empty() As AIKit.ChatResponse
+		  /// Returns an empty chat response with all DateTimes being now.
+		  /// These are used to represent a response failure.
+		  
+		  Return New AIKit.ChatResponse("", "", DateTime.Now, DateTime.Now, 0, 0, DateTime.Now, DateTime.Now)
+		  
+		End Function
+	#tag EndMethod
+
 
 	#tag Note, Name = About
 		Contains data about a completed response from a chat model.

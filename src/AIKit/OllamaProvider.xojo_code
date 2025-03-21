@@ -83,6 +83,18 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B7320746865206D6F64656C20612071756572792E206074696D656F75746020697320746865206E756D626572206F66207365636F6E647320746F207761697420666F72206120726573706F6E73652E20412076616C7565206F66206030602077696C6C207761697420696E646566696E6974656C792E
+		Function Ask(what As String, timeout As Integer = 0) As AIKit.ChatResponse
+		  /// Synchronously asks the model a query.
+		  /// `timeout` is the number of seconds to wait for a response. A value of `0` will wait indefinitely.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
+		  
+		  #Pragma Warning "TODO"
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 436F6E666967757265732061206E65772055524C436F6E6E656374696F6E2C20686F6F6B696E67207570206576656E742068616E646C65727320616E642072656D6F76696E67206F6C64206576656E742068616E646C657273206173206E65656465642E
 		Private Sub ConfigureNewConnection()
 		  /// Configures a new URLConnection, hooking up event handlers and removing old event handlers as needed.

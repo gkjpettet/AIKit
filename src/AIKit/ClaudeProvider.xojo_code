@@ -65,6 +65,87 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B7320746865206D6F64656C20612071756572792E206074696D656F75746020697320746865206E756D626572206F66207365636F6E647320746F207761697420666F72206120726573706F6E73652E20412076616C7565206F66206030602077696C6C207761697420696E646566696E6974656C792E
+		Function Ask(what As String, timeout As Integer = 0) As AIKit.ChatResponse
+		  /// Synchronously asks the model a query.
+		  /// `timeout` is the number of seconds to wait for a response. A value of `0` will wait indefinitely.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
+		  
+		  // Create a new user message and add it to the conversation history.
+		  mOwner.AddMessage(New AIKit.ChatMessage("user", what))
+		  
+		  // Reset stuff.
+		  mInputTokenCount = 0
+		  mOutputTokenCount = 0
+		  mLastResponse.ResizeTo(-1)
+		  mLastThinking.ResizeTo(-1)
+		  mIncomingMessageID = ""
+		  mCurrentlyThinking = False
+		  mIsAwaitingResponse = False
+		  
+		  // Reset timing.
+		  mMessageTimeStart = DateTime.Now
+		  mMessageTimeStop = Nil
+		  mThinkingTimeStart = Nil
+		  mThinkingTimeStop = Nil
+		  
+		  // Prepare all messages for the API call.
+		  Var messages() As Dictionary
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(msg.ToDictionary)
+		  Next msg
+		  
+		  // Create the request payload.
+		  Var payload As New Dictionary
+		  payload.Value("model") = mowner.ModelName
+		  payload.Value("messages") = messages
+		  payload.Value("max_tokens") = mOwner.MaxTokens
+		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, mOwner.Temperature)
+		  payload.Value("stream") = False
+		  If mOwner.ShouldThink Then
+		    payload.Value("thinking") = _
+		    New Dictionary("type" : "enabled", "budget_tokens": mOwner.MaxThinkingBudget)
+		  End If
+		  If mOwner.SystemPrompt <> "" Then
+		    payload.Value("system") = mOwner.SystemPrompt
+		  End If
+		  
+		  // Send the request synchronously to the Claude API.
+		  Try
+		    Var connection As New URLConnection
+		    
+		    // Build the headers.
+		    connection.RequestHeader("x-api-key") = mAPIKey
+		    connection.RequestHeader("anthropic-version") = ANTHROPIC_VERSION
+		    
+		    // Create the JSON payload.
+		    Var jsonPayload As String = GenerateJSON(payload)
+		    
+		    // Set the content of the request.
+		    connection.SetRequestContent(jsonPayload, "application/json")
+		    
+		    // Send it.
+		    mIsAwaitingResponse = True
+		    Var responseJSON As String
+		    Try
+		      responseJSON = connection.SendSync("POST", API_ENDPOINT_MESSAGES, timeout)
+		      Return ProcessSynchronousResponse(responseJSON)
+		    Catch e As NetworkException
+		      If mOwner.APIErrorDelegate <> Nil Then
+		        mOwner.APIErrorDelegate.Invoke(mOwner, e.Message)
+		      Else
+		        Raise New AIKit.APIException(e.Message)
+		      End If
+		    End Try
+		    
+		  Catch e As RuntimeException
+		    e.Message = "API request error: " + e.Message
+		    Raise e
+		  End Try
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 436F6E666967757265732061206E65772055524C436F6E6E656374696F6E2C20686F6F6B696E67207570206576656E742068616E646C65727320616E642072656D6F76696E67206F6C64206576656E742068616E646C657273206173206E65656465642E
 		Private Sub ConfigureNewConnection()
 		  /// Configures a new URLConnection, hooking up event handlers and removing old event handlers as needed.
@@ -490,6 +571,79 @@ Implements AIKit.ChatProvider
 		    mOwner.MessageStartedDelegate.Invoke(mOwner, mIncomingMessageID, mInputTokenCount)
 		  End If
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 50726F63657373657320746865204A534F4E2072657475726E65642066726F6D2074686520436C617564652041504920666F7220612073796E6368726F6E6F7573206D65737361676520726571756573742E2052657475726E732061206043686174526573706F6E736560206F626A6563742E
+		Private Function ProcessSynchronousResponse(responseJSON As String) As AIKit.ChatResponse
+		  /// Processes the JSON returned from the Claude API for a synchronous message request.
+		  /// Returns a `ChatResponse` object.
+		  
+		  // Parse the JSON to a dictionary.
+		  Var data As Dictionary
+		  Try
+		    data = ParseJSON(responseJSON)
+		  Catch e As JSONException
+		    If mOwner.APIErrorDelegate <> Nil Then
+		      mOwner.APIErrorDelegate.Invoke(mOwner, "Invalid JSON received.")
+		    Else
+		      Raise New AIKit.APIException(e.Message)
+		    End If
+		  End Try
+		  
+		  // Check for an error.
+		  If data.Lookup("type", "") = "error" Then
+		    Var err As Dictionary = data.Lookup("error", Nil)
+		    Var errMessage As String = If(err = Nil, "", err.Lookup("message", ""))
+		    If mOwner.APIErrorDelegate <> Nil Then
+		      mOwner.APIErrorDelegate.Invoke(mOwner, errMessage)
+		      Return AIKit.ChatResponse.Empty
+		    Else
+		      Raise New AIKit.APIException(errMessage)
+		    End If
+		  End If
+		  
+		  // Content.
+		  If Not data.HasKey("content") Then
+		    Return AIKit.ChatResponse.Empty
+		  End If
+		  Var contents() As Object = data.Value("content")
+		  For Each contentObj As Object In contents
+		    If contentObj IsA Dictionary = False Then Continue
+		    Var content As Dictionary = Dictionary(contentObj)
+		    Select Case content.Lookup("type", "")
+		    Case "thinking"
+		      If content.HasKey("thinking") Then
+		        mLastThinking.Add(content.Value("thinking"))
+		      End If
+		    Case "text"
+		      If content.HasKey("text") Then
+		        mLastResponse.Add(content.Value("text"))
+		      End If
+		    End Select
+		  Next contentObj
+		  Var thinkingContent As String = String.FromArray(mLastThinking, "")
+		  Var messageContent As String = String.FromArray(mLastResponse, "")
+		  
+		  // Meta.
+		  mIncomingMessageID = data.Lookup("id", "")
+		  
+		  // Usage.
+		  If data.HasKey("usage") Then
+		    Var usage As Dictionary = data.Value("usage")
+		    mInputTokenCount = usage.Lookup("input_tokens", 0)
+		    mOutputTokenCount = usage.Lookup("output_tokens", 0)
+		  End If
+		  
+		  // The Claude API doesn't provide a way to determine how long the model spent thinking
+		  // when making a synchronous call. We will therefore set the thinking time to 0 and the message
+		  // time will reflect both thinking and the actual message.
+		  mThinkingTimeStop = Nil
+		  mMessageTimeStop = DateTime.Now
+		  
+		  Return New AIKit.ChatResponse(messageContent, thinkingContent, mMessageTimeStart, mMessageTimeStop, _
+		  mInputTokenCount, mOutputTokenCount, mThinkingTimeStart, mThinkingTimeStop)
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 48616E646C657320746865206172726976616C206F66206E657720646174612066726F6D20616E2061637469766520436C617564652041504920636F6E6E656374696F6E2E

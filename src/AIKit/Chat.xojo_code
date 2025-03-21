@@ -35,6 +35,20 @@ Protected Class Chat
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B7320746865206D6F64656C20612071756572792E206074696D656F75746020697320746865206E756D626572206F66207365636F6E647320746F207761697420666F72206120726573706F6E73652E20412076616C7565206F66206030602077696C6C207761697420696E646566696E6974656C792E
+		Function Ask(what As String, timeout As Integer = 0) As AIKit.ChatResponse
+		  /// Synchronously asks the model a query.
+		  /// `timeout` is the number of seconds to wait for a response. A value of `0` will wait indefinitely.
+		  
+		  If MyProvider <> Nil Then
+		    Return MyProvider.Ask(what, timeout)
+		  Else
+		    Return AIKit.ChatResponse.Empty
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0, Description = 436C656172732074686520636F6E766572736174696F6E20686973746F72792E
 		Sub ClearHistory()
 		  /// Clears the conversation history.
