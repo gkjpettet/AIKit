@@ -5,63 +5,8 @@ Implements AIKit.ChatProvider
 		Sub Ask(what As String)
 		  /// Asynchronously asks the currently selected model a query.
 		  
-		  // Create a new user message and add it to the conversation history.
-		  mOwner.AddMessage(New AIKit.ChatMessage("user", what))
+		  AskWithMessage(New AIKit.ChatMessage("user", what))
 		  
-		  // Reset stuff.
-		  mInputTokenCount = 0
-		  mOutputTokenCount = 0
-		  mLastResponse.ResizeTo(-1)
-		  mLastThinking.ResizeTo(-1)
-		  mIncomingMessageID = ""
-		  mCurrentlyThinking = False
-		  mIsAwaitingResponse = False
-		  
-		  // Reset timing.
-		  mMessageTimeStart = DateTime.Now
-		  mMessageTimeStop = Nil
-		  mThinkingTimeStart = Nil
-		  mThinkingTimeStop = Nil
-		  
-		  // Prepare all messages for the API call.
-		  Var messages() As Dictionary
-		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(msg.ToDictionary)
-		  Next msg
-		  
-		  // Create the request payload.
-		  Var payload As New Dictionary
-		  payload.Value("model") = mowner.ModelName
-		  payload.Value("messages") = messages
-		  payload.Value("max_tokens") = mOwner.MaxTokens
-		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, mOwner.Temperature)
-		  payload.Value("stream") = True
-		  If mOwner.ShouldThink Then
-		    payload.Value("thinking") = _
-		    New Dictionary("type" : "enabled", "budget_tokens": mOwner.MaxThinkingBudget)
-		  End If
-		  If mOwner.SystemPrompt <> "" Then
-		    payload.Value("system") = mOwner.SystemPrompt
-		  End If
-		  
-		  // Send the request asynchronously to the Claude API.
-		  Try
-		    ConfigureNewConnection
-		    
-		    // Create the JSON payload.
-		    Var jsonPayload As String = GenerateJSON(payload)
-		    
-		    // Set the content of the request.
-		    mConnection.SetRequestContent(jsonPayload, "application/json")
-		    
-		    // Send it.
-		    mIsAwaitingResponse = True
-		    mConnection.Send("POST", API_ENDPOINT_MESSAGES)
-		    
-		  Catch e As RuntimeException
-		    e.Message = "API request error: " + e.Message
-		    Raise e
-		  End Try
 		End Sub
 	#tag EndMethod
 
@@ -93,7 +38,7 @@ Implements AIKit.ChatProvider
 		  // Prepare all messages for the API call.
 		  Var messages() As Dictionary
 		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(msg.ToDictionary)
+		    messages.Add(MessageAsDictionary(msg))
 		  Next msg
 		  
 		  // Create the request payload.
@@ -144,6 +89,170 @@ Implements AIKit.ChatProvider
 		    Raise e
 		  End Try
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 496E7465726E616C2068656C70657220666F72206173796E6368726F6E6F75736C792061736B696E6720746865206D6F64656C206120717565727920776974682061207072652D63726561746564206D6573736167652E
+		Private Sub AskWithMessage(message As AIKit.ChatMessage)
+		  /// Internal helper for asynchronously asking the model a query with a pre-created message.
+		  
+		  // Add the message to the conversation history.
+		  mOwner.AddMessage(message)
+		  
+		  // Reset stuff.
+		  mInputTokenCount = 0
+		  mOutputTokenCount = 0
+		  mLastResponse.ResizeTo(-1)
+		  mLastThinking.ResizeTo(-1)
+		  mIncomingMessageID = ""
+		  mCurrentlyThinking = False
+		  mIsAwaitingResponse = False
+		  
+		  // Reset timing.
+		  mMessageTimeStart = DateTime.Now
+		  mMessageTimeStop = Nil
+		  mThinkingTimeStart = Nil
+		  mThinkingTimeStop = Nil
+		  
+		  // Prepare all messages for the API call.
+		  Var messages() As Dictionary
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(MessageAsDictionary(msg))
+		  Next msg
+		  
+		  // Create the request payload.
+		  Var payload As New Dictionary
+		  payload.Value("model") = mowner.ModelName
+		  payload.Value("messages") = messages
+		  payload.Value("max_tokens") = mOwner.MaxTokens
+		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, mOwner.Temperature)
+		  payload.Value("stream") = True
+		  If mOwner.ShouldThink Then
+		    payload.Value("thinking") = _
+		    New Dictionary("type" : "enabled", "budget_tokens": mOwner.MaxThinkingBudget)
+		  End If
+		  If mOwner.SystemPrompt <> "" Then
+		    payload.Value("system") = mOwner.SystemPrompt
+		  End If
+		  
+		  // Send the request asynchronously to the Claude API.
+		  Try
+		    ConfigureNewConnection
+		    
+		    // Create the JSON payload.
+		    Var jsonPayload As String = GenerateJSON(payload)
+		    
+		    // Set the content of the request.
+		    mConnection.SetRequestContent(jsonPayload, "application/json")
+		    
+		    // Send it.
+		    mIsAwaitingResponse = True
+		    mConnection.Send("POST", API_ENDPOINT_MESSAGES)
+		    
+		  Catch e As RuntimeException
+		    e.Message = "API request error: " + e.Message
+		    Raise e
+		  End Try
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 496E7465726E616C2068656C70657220666F722073796E6368726F6E6F75736C792061736B696E6720746865206D6F64656C206120717565727920776974682061207072652D63726561746564206D6573736167652E
+		Private Function AskWithMessage(message As AIKit.ChatMessage, timeout As Integer) As AIKit.ChatResponse
+		  /// Internal helper for synchronously asking the model a query with a pre-created message.
+		  
+		  // Add the message to the conversation history.
+		  mOwner.AddMessage(message)
+		  
+		  // Reset stuff.
+		  mInputTokenCount = 0
+		  mOutputTokenCount = 0
+		  mLastResponse.ResizeTo(-1)
+		  mLastThinking.ResizeTo(-1)
+		  mIncomingMessageID = ""
+		  mCurrentlyThinking = False
+		  mIsAwaitingResponse = False
+		  
+		  // Reset timing.
+		  mMessageTimeStart = DateTime.Now
+		  mMessageTimeStop = Nil
+		  mThinkingTimeStart = Nil
+		  mThinkingTimeStop = Nil
+		  
+		  // Prepare all messages for the API call.
+		  Var messages() As Dictionary
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(MessageAsDictionary(msg))
+		  Next msg
+		  
+		  // Create the request payload.
+		  Var payload As New Dictionary
+		  payload.Value("model") = mowner.ModelName
+		  payload.Value("messages") = messages
+		  payload.Value("max_tokens") = mOwner.MaxTokens
+		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, mOwner.Temperature)
+		  payload.Value("stream") = False
+		  If mOwner.ShouldThink Then
+		    payload.Value("thinking") = _
+		    New Dictionary("type" : "enabled", "budget_tokens": mOwner.MaxThinkingBudget)
+		  End If
+		  If mOwner.SystemPrompt <> "" Then
+		    payload.Value("system") = mOwner.SystemPrompt
+		  End If
+		  
+		  // Send the request synchronously to the Claude API.
+		  Try
+		    Var connection As New URLConnection
+		    
+		    // Build the headers.
+		    connection.RequestHeader("x-api-key") = mAPIKey
+		    connection.RequestHeader("anthropic-version") = ANTHROPIC_VERSION
+		    
+		    // Create the JSON payload.
+		    Var jsonPayload As String = GenerateJSON(payload)
+		    
+		    // Set the content of the request.
+		    connection.SetRequestContent(jsonPayload, "application/json")
+		    
+		    // Send it.
+		    mIsAwaitingResponse = True
+		    Var responseJSON As String
+		    Try
+		      responseJSON = connection.SendSync("POST", API_ENDPOINT_MESSAGES, timeout)
+		      Return ProcessSynchronousResponse(responseJSON)
+		    Catch e As NetworkException
+		      If mOwner.APIErrorDelegate <> Nil Then
+		        mOwner.APIErrorDelegate.Invoke(mOwner, e.Message)
+		      Else
+		        Raise New AIKit.APIException(e.Message)
+		      End If
+		    End Try
+		    
+		  Catch e As RuntimeException
+		    e.Message = "API request error: " + e.Message
+		    Raise e
+		  End Try
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Function AskWithPicture(what As String, timeout As Integer, p As Picture) As AIKit.ChatResponse
+		  /// Synchronously asks the currently selected model a query and provides an image.
+		  
+		  Var m As New AIKit.ChatMessage("user", what)
+		  m.Pictures.Add(p)
+		  Return AskWithMessage(m, timeout)
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Sub AskWithPicture(what As String, p As Picture)
+		  /// Asynchronously asks the currently selected model a query and provides an image.
+		  
+		  Var m As New AIKit.ChatMessage("user", what)
+		  m.Pictures.Add(p)
+		  AskWithMessage(m)
+		  
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 436F6E666967757265732061206E65772055524C436F6E6E656374696F6E2C20686F6F6B696E67207570206576656E742068616E646C65727320616E642072656D6F76696E67206F6C64206576656E742068616E646C657273206173206E65656465642E
@@ -235,6 +344,32 @@ Implements AIKit.ChatProvider
 		  
 		  Return False
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function MessageAsDictionary(m As AIKit.ChatMessage) As Dictionary
+		  /// Returns this message as a Dictionary for encoding as JSON.
+		  
+		  Var d As New Dictionary("role" : m.Role)
+		  
+		  If m.Pictures.Count = 0 Then
+		    d.Value("content") = m.Content
+		  Else
+		    Var contents() As Dictionary
+		    For Each p As Picture In m.Pictures
+		      Var imageContent As New Dictionary("type" : "image")
+		      Var source As New Dictionary("type" : "base64", "media_type" : "image/jpeg")
+		      source.Value("data") = EncodeBase64(p.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0)
+		      imageContent.Value("source") = source
+		      contents.Add(imageContent)
+		    Next p
+		    contents.Add(New Dictionary("type" : "text", "text" : m.Content))
+		    
+		    d.Value("content") = contents
+		  End If
+		  
+		  Return d
 		End Function
 	#tag EndMethod
 
@@ -819,14 +954,6 @@ Implements AIKit.ChatProvider
 			Visible=true
 			Group="Position"
 			InitialValue="0"
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="mOwner"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
 			Type="Integer"
 			EditorType=""
 		#tag EndViewProperty

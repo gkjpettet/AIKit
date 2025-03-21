@@ -12,6 +12,18 @@ Protected Interface ChatProvider
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Function AskWithPicture(what As String, timeout As Integer, p As Picture) As AIKit.ChatResponse
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Sub AskWithPicture(what As String, p As Picture)
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Sub Constructor(owner As AIKit.Chat, apiKey As String = "", endpoint As String = "")
 		  

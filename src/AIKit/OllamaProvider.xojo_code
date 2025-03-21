@@ -15,6 +15,21 @@ Implements AIKit.ChatProvider
 		  // Create a new user message.
 		  Var userMessage As New AIKit.ChatMessage("user", what)
 		  
+		  AskWithMessage(userMessage)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B7320746865206D6F64656C20612071756572792E206074696D656F75746020697320746865206E756D626572206F66207365636F6E647320746F207761697420666F72206120726573706F6E73652E20412076616C7565206F66206030602077696C6C207761697420696E646566696E6974656C792E
+		Function Ask(what As String, timeout As Integer = 0) As AIKit.ChatResponse
+		  /// Synchronously asks the model a query.
+		  /// `timeout` is the number of seconds to wait for a response. A value of `0` will wait indefinitely.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
+		  
+		  // Create a new user message.
+		  Var userMessage As New AIKit.ChatMessage("user", what)
+		  
 		  // Add it to the conversation history.
 		  mOwner.Messages.Add(userMessage)
 		  
@@ -34,7 +49,88 @@ Implements AIKit.ChatProvider
 		  // Prepare all messages for the API call.
 		  Var messages() As Dictionary
 		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(msg.ToDictionary)
+		    messages.Add(MessageAsDictionary(msg))
+		  Next msg
+		  
+		  // The system prompt is injected as the first message to the model.
+		  If mOwner.SystemPrompt <> "" Then
+		    Var systemMessage As New Dictionary("role" : "system", "content" : mOwner.SystemPrompt)
+		    messages.AddAt(0, systemMessage)
+		  End If
+		  
+		  // Create the request payload.
+		  Var payload As New Dictionary
+		  payload.Value("model") = mOwner.ModelName
+		  payload.Value("messages") = messages
+		  payload.Value("stream") = False
+		  If mOwner.KeepAlive Then
+		    payload.Value("keep_alive") = "-1"
+		  Else
+		    payload.Value("keep_alive") = mOwner.KeepAliveMinutes.ToString + "m"
+		  End If
+		  
+		  // Additional payload options.
+		  Var options As New Dictionary
+		  options.Value("temperature") = mOwner.Temperature
+		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
+		  payload.Value("options") = options
+		  
+		  // Send the request synchronously to the Ollama API.
+		  Try
+		    Var connection As New URLConnection
+		    
+		    // Create the JSON payload.
+		    Var jsonPayload As String = GenerateJSON(payload)
+		    
+		    // Set the content of the request.
+		    connection.SetRequestContent(jsonPayload, "application/json")
+		    
+		    // Send it.
+		    mIsAwaitingResponse = True
+		    Var responseJSON As String
+		    Try
+		      responseJSON = connection.SendSync("POST", mEndPoint + ENDPOINT_CHAT, timeout)
+		      Return ProcessSynchronousResponse(responseJSON)
+		    Catch e As NetworkException
+		      If mOwner.APIErrorDelegate <> Nil Then
+		        mOwner.APIErrorDelegate.Invoke(mOwner, e.Message)
+		      Else
+		        Raise New AIKit.APIException(e.Message)
+		      End If
+		    End Try
+		    
+		  Catch e As RuntimeException
+		    e.Message = "API request error: " + e.Message
+		    Raise e
+		  End Try
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 496E7465726E616C2068656C70657220666F72206173796E6368726F6E6F75736C792061736B696E6720746865206D6F64656C206120717565727920776974682061207072652D63726561746564206D6573736167652E
+		Private Sub AskWithMessage(message As AIKit.ChatMessage)
+		  /// Internal helper for asynchronously asking the model a query with a pre-created message.
+		  
+		  // Add the message to the conversation history.
+		  mOwner.AddMessage(message)
+		  
+		  // Reset.
+		  mLastResponse.ResizeTo(-1)
+		  mLastThinking.ResizeTo(-1)
+		  mCurrentlyThinking = False
+		  mIsAwaitingResponse = False
+		  mMessageStarted = False
+		  
+		  // Reset timing.
+		  mMessageTimeStart = DateTime.Now
+		  mMessageTimeStop = Nil
+		  mThinkingTimeStart = Nil
+		  mThinkingTimeStop = Nil
+		  
+		  // Prepare all messages for the API call.
+		  Var messages() As Dictionary
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(MessageAsDictionary(msg))
 		  Next msg
 		  
 		  // The system prompt is injected as the first message to the model.
@@ -83,20 +179,12 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B7320746865206D6F64656C20612071756572792E206074696D656F75746020697320746865206E756D626572206F66207365636F6E647320746F207761697420666F72206120726573706F6E73652E20412076616C7565206F66206030602077696C6C207761697420696E646566696E6974656C792E
-		Function Ask(what As String, timeout As Integer = 0) As AIKit.ChatResponse
-		  /// Synchronously asks the model a query.
-		  /// `timeout` is the number of seconds to wait for a response. A value of `0` will wait indefinitely.
-		  ///
-		  /// Part of the AIKit.ChatProvider interface.
+	#tag Method, Flags = &h21, Description = 496E7465726E616C2068656C70657220666F722073796E6368726F6E6F75736C792061736B696E6720746865206D6F64656C206120717565727920776974682061207072652D63726561746564206D6573736167652E
+		Private Function AskWithMessage(message As AIKit.ChatMessage, timeout As Integer) As AIKit.ChatResponse
+		  /// Internal helper for synchronously asking the model a query with a pre-created message.
 		  
-		  #Pragma Warning "TODO"
-		  
-		  // Create a new user message.
-		  Var userMessage As New AIKit.ChatMessage("user", what)
-		  
-		  // Add it to the conversation history.
-		  mOwner.Messages.Add(userMessage)
+		  // Add the message to the conversation history.
+		  mOwner.AddMessage(message)
 		  
 		  // Reset.
 		  mLastResponse.ResizeTo(-1)
@@ -114,7 +202,7 @@ Implements AIKit.ChatProvider
 		  // Prepare all messages for the API call.
 		  Var messages() As Dictionary
 		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(msg.ToDictionary)
+		    messages.Add(MessageAsDictionary(msg))
 		  Next msg
 		  
 		  // The system prompt is injected as the first message to the model.
@@ -139,7 +227,6 @@ Implements AIKit.ChatProvider
 		  options.Value("temperature") = mOwner.Temperature
 		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
 		  payload.Value("options") = options
-		  
 		  
 		  // Send the request synchronously to the Ollama API.
 		  Try
@@ -171,6 +258,28 @@ Implements AIKit.ChatProvider
 		  End Try
 		  
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Function AskWithPicture(what As String, timeout As Integer, p As Picture) As AIKit.ChatResponse
+		  /// Synchronously asks the currently selected model a query and provides an image.
+		  
+		  Var m As New AIKit.ChatMessage("user", what)
+		  m.Pictures.Add(p)
+		  Return AskWithMessage(m, timeout)
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Sub AskWithPicture(what As String, p As Picture)
+		  /// Asynchronously asks the currently selected model a query and provides an image.
+		  
+		  Var m As New AIKit.ChatMessage("user", what)
+		  m.Pictures.Add(p)
+		  AskWithMessage(m)
+		  
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 436F6E666967757265732061206E65772055524C436F6E6E656374696F6E2C20686F6F6B696E67207570206576656E742068616E646C65727320616E642072656D6F76696E67206F6C64206576656E742068616E646C657273206173206E65656465642E
@@ -273,6 +382,25 @@ Implements AIKit.ChatProvider
 		  Next model
 		  
 		  Return False
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function MessageAsDictionary(m As AIKit.ChatMessage) As Dictionary
+		  /// Returns this message as a Dictionary for encoding as JSON.
+		  
+		  Var d As New Dictionary("role" : m.Role, "content" : m.Content)
+		  
+		  If m.Pictures.Count > 0 Then
+		    Var encodedImages() As String
+		    For Each p As Picture In m.Pictures
+		      encodedImages.Add(EncodeBase64(p.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0))
+		    Next p
+		    d.Value("images") = encodedImages
+		  End If
+		  
+		  Return d
 		  
 		End Function
 	#tag EndMethod

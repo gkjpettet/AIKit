@@ -49,6 +49,23 @@ Protected Class Chat
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Function AskWithPicture(what As String, timeout As Integer, p As Picture) As AIKit.ChatResponse
+		  /// Synchronously asks the currently selected model a query and provides an image.
+		  
+		  If MyProvider <> Nil Then Return MyProvider.AskWithPicture(what, timeout, p)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
+		Sub AskWithPicture(what As String, p As Picture)
+		  /// Asynchronously asks the currently selected model a query and provides an image.
+		  
+		  If MyProvider <> Nil Then MyProvider.AskWithPicture(what, p)
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0, Description = 436C656172732074686520636F6E766572736174696F6E20686973746F72792E
 		Sub ClearHistory()
 		  /// Clears the conversation history.
@@ -291,6 +308,54 @@ Protected Class Chat
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="ModelName"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="KeepAlive"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="KeepAliveMinutes"
+			Visible=false
+			Group="Behavior"
+			InitialValue="5"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MaxThinkingBudget"
+			Visible=false
+			Group="Behavior"
+			InitialValue="DEFAULT_THINKING_BUDGET"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MaxTokens"
+			Visible=false
+			Group="Behavior"
+			InitialValue="DEFAULT_MAX_TOKENS"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="ShouldThink"
+			Visible=false
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SystemPrompt"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
