@@ -138,6 +138,19 @@ Protected Class Chat
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 54727565206966207468652063757272656E74206D6F64656C20737570706F72747320696E74657270726574696E6720696D616765732E
+		Function SupportsImages() As Boolean
+		  /// True if the current model supports interpreting images.
+		  
+		  If MyProvider = Nil Then
+		    Return False
+		  Else
+		    Return MyProvider.SupportsImages
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0, Description = 5365747320746865206D6F64656C20746F206368617420776974682E2050726573657276657320616E79206578697374696E6720636F6E766572736174696F6E20686973746F72792E204D617920726169736520616E20415049457863657074696F6E2E
 		Sub WithModel(model As String, provider As AIKit.Providers, apiKey As String = "", endpoint As String = "")
 		  /// Sets the model to chat with. 
@@ -360,7 +373,7 @@ Protected Class Chat
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

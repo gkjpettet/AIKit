@@ -260,23 +260,41 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
-		Function AskWithPicture(what As String, timeout As Integer, p As Picture) As AIKit.ChatResponse
-		  /// Synchronously asks the currently selected model a query and provides an image.
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F7669646573206174206C65617374206F6E6520696D6167652E
+		Function AskWithPicture(what As String, timeout As Integer, ParamArray pics As Picture) As AIKit.ChatResponse
+		  /// Synchronously asks the currently selected model a query and provides at least one image.
+		  
+		  If pics.Count = 0 Then
+		    Raise New AIKit.APIException("At least one picture must be supplied to the " + _
+		    "`AskWithPicture()` method.")
+		  End If
 		  
 		  Var m As New AIKit.ChatMessage("user", what)
-		  m.Pictures.Add(p)
+		  
+		  For Each p As Picture In pics
+		    m.Pictures.Add(p)
+		  Next p
+		  
 		  Return AskWithMessage(m, timeout)
 		  
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
-		Sub AskWithPicture(what As String, p As Picture)
-		  /// Asynchronously asks the currently selected model a query and provides an image.
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F7669646573206174206C65617374206F6E6520696D6167652E
+		Sub AskWithPicture(what As String, ParamArray pics As Picture)
+		  /// Asynchronously asks the currently selected model a query and provides at least one image.
+		  
+		  If pics.Count = 0 Then
+		    Raise New AIKit.APIException("At least one picture must be supplied to the " + _
+		    "`AskWithPicture()` method.")
+		  End If
 		  
 		  Var m As New AIKit.ChatMessage("user", what)
-		  m.Pictures.Add(p)
+		  
+		  For Each p As Picture In pics
+		    m.Pictures.Add(p)
+		  Next p
+		  
 		  AskWithMessage(m)
 		  
 		End Sub
@@ -701,6 +719,52 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 54727565206966207468652063757272656E74206D6F64656C20737570706F72747320696E74657270726574696E6720696D616765732E
+		Function SupportsImages() As Boolean
+		  /// True if the current model supports interpreting images.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
+		  
+		  #Pragma BreakOnExceptions False
+		  
+		  Var connection As New URLConnection
+		  
+		  // Create the JSON payload.
+		  Var payload As New Dictionary("model" : mOwner.ModelName)
+		  Var jsonPayload As String = GenerateJSON(payload)
+		  
+		  // Set the content of the request.
+		  connection.SetRequestContent(jsonPayload, "application/json")
+		  
+		  // Send it.
+		  Var responseJSON As String
+		  Try
+		    responseJSON = connection.SendSync("POST", mEndPoint + ENDPOINT_SHOW, 5)
+		    Var data As Dictionary
+		    Try
+		      data = ParseJSON(responseJSON)
+		      If data.HasKey("projector_info") Then
+		        Var projectorInfo As Dictionary = data.Value("projector_info")
+		        For Each entry As DictionaryEntry In projectorInfo
+		          If entry.Key.StringValue.Contains("vision") Then Return True
+		        Next entry
+		      ElseIf data.HasKey("model_info") Then
+		        Var modelInfo As Dictionary = data.Value("model_info")
+		        For Each entry As DictionaryEntry In modelInfo
+		          If entry.Key.StringValue.Contains("vision") Then Return True
+		        Next entry
+		      End If
+		    Catch e As JSONException
+		      Return False
+		    End Try
+		  Catch e As NetworkException
+		    Return False
+		  End Try
+		  
+		  Return False
+		End Function
+	#tag EndMethod
+
 
 	#tag Property, Flags = &h1
 		Protected mConnection As URLConnection
@@ -755,6 +819,9 @@ Implements AIKit.ChatProvider
 	#tag EndConstant
 
 	#tag Constant, Name = ENDPOINT_LIST_LOCAL_MODELS, Type = String, Dynamic = False, Default = \"tags", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ENDPOINT_SHOW, Type = String, Dynamic = False, Default = \"show", Scope = Protected
 	#tag EndConstant
 
 

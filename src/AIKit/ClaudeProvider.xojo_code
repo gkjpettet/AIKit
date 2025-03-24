@@ -95,6 +95,8 @@ Implements AIKit.ChatProvider
 		Private Sub AskWithMessage(message As AIKit.ChatMessage)
 		  /// Internal helper for asynchronously asking the model a query with a pre-created message.
 		  
+		  #Pragma BreakOnExceptions False
+		  
 		  // Add the message to the conversation history.
 		  mOwner.AddMessage(message)
 		  
@@ -158,6 +160,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h21, Description = 496E7465726E616C2068656C70657220666F722073796E6368726F6E6F75736C792061736B696E6720746865206D6F64656C206120717565727920776974682061207072652D63726561746564206D6573736167652E
 		Private Function AskWithMessage(message As AIKit.ChatMessage, timeout As Integer) As AIKit.ChatResponse
 		  /// Internal helper for synchronously asking the model a query with a pre-created message.
+		  
+		  #Pragma BreakOnExceptions False
 		  
 		  // Add the message to the conversation history.
 		  mOwner.AddMessage(message)
@@ -233,23 +237,41 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
-		Function AskWithPicture(what As String, timeout As Integer, p As Picture) As AIKit.ChatResponse
-		  /// Synchronously asks the currently selected model a query and provides an image.
+	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F7669646573206F6E65206F72206D6F726520696D616765732E
+		Function AskWithPicture(what As String, timeout As Integer, ParamArray pics As Picture) As AIKit.ChatResponse
+		  /// Synchronously asks the currently selected model a query and provides one or more images.
+		  
+		  If pics.Count = 0 Then
+		    Raise New AIKit.APIException("At least one picture must be supplied to the " + _
+		    "`AskWithPicture()` method.")
+		  End If
 		  
 		  Var m As New AIKit.ChatMessage("user", what)
-		  m.Pictures.Add(p)
+		  
+		  For Each p As Picture In pics
+		    m.Pictures.Add(p)
+		  Next p
+		  
 		  Return AskWithMessage(m, timeout)
 		  
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F766964657320616E20696D6167652E
-		Sub AskWithPicture(what As String, p As Picture)
-		  /// Asynchronously asks the currently selected model a query and provides an image.
+	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F7669646573206174206C65617374206F6E6520696D6167652E
+		Sub AskWithPicture(what As String, ParamArray pics As Picture)
+		  /// Asynchronously asks the currently selected model a query and provides at least one image.
+		  
+		  If pics.Count = 0 Then
+		    Raise New AIKit.APIException("At least one picture must be supplied to the " + _
+		    "`AskWithPicture()` method.")
+		  End If
 		  
 		  Var m As New AIKit.ChatMessage("user", what)
-		  m.Pictures.Add(p)
+		  
+		  For Each p As Picture In pics
+		    m.Pictures.Add(p)
+		  Next p
+		  
 		  AskWithMessage(m)
 		  
 		End Sub
@@ -360,7 +382,10 @@ Implements AIKit.ChatProvider
 		    For Each p As Picture In m.Pictures
 		      Var imageContent As New Dictionary("type" : "image")
 		      Var source As New Dictionary("type" : "base64", "media_type" : "image/jpeg")
-		      source.Value("data") = EncodeBase64(p.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0)
+		      // The Claude API places some restrictions on the size of images the API accepts:
+		      // https://docs.anthropic.com/en/docs/build-with-claude/vision
+		      Var resizedPic As Picture = ResizePicture(p)
+		      source.Value("data") = EncodeBase64(resizedPic.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0)
 		      imageContent.Value("source") = source
 		      contents.Add(imageContent)
 		    Next p
@@ -713,6 +738,8 @@ Implements AIKit.ChatProvider
 		  /// Processes the JSON returned from the Claude API for a synchronous message request.
 		  /// Returns a `ChatResponse` object.
 		  
+		  #Pragma BreakOnExceptions False
+		  
 		  // Parse the JSON to a dictionary.
 		  Var data As Dictionary
 		  Try
@@ -728,7 +755,7 @@ Implements AIKit.ChatProvider
 		  // Check for an error.
 		  If data.Lookup("type", "") = "error" Then
 		    Var err As Dictionary = data.Lookup("error", Nil)
-		    Var errMessage As String = If(err = Nil, "", err.Lookup("message", ""))
+		    Var errMessage As String = If(err = Nil, "", err.Lookup("type", "") + ": "+ err.Lookup("message", ""))
 		    If mOwner.APIErrorDelegate <> Nil Then
 		      mOwner.APIErrorDelegate.Invoke(mOwner, errMessage)
 		      Return AIKit.ChatResponse.Empty
@@ -827,6 +854,83 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1, Description = 526573697A6573206174686520706173736564207069637475726520746F20636F6D706C7920776974682074686520436C617564652041504920726571756972656D656E74732E
+		Protected Function ResizePicture(p As Picture) As Picture
+		  /// Resizes athe passed picture to comply with the Claude API requirements.
+		  ///
+		  /// https://docs.anthropic.com/en/docs/build-with-claude/vision
+		  
+		  If p = Nil Then Return p
+		  
+		  // Handle the easy case of square images.
+		  If p.Width = p.Height Then
+		    If p.Width <= 1092 Then
+		      // No need to resize.
+		      Return p
+		    Else
+		      // Too big. Resize to 1092 x 1092.
+		      Var newPic As New Picture(1092, 1092, 32)
+		      newPic.Graphics.DrawPicture(p, 0, 0, 1092, 1092, 0, 0, p.Width, p.Height)
+		    End If
+		  End If
+		  
+		  // In addition to square images, the Claude API gives 4 aspect ratios with different limits
+		  // on the image size. We need to find the closes aspect ratio.
+		  Var difference, smallestDifference As Double
+		  Var aspect As Double = p.Width / p.Height
+		  
+		  // 4:3 ratio.
+		  Var closestRatio As Double = 4/3
+		  smallestDifference = Abs(aspect - (4/3))
+		  
+		  // 3:2 ratio (=1.5).
+		  difference = Abs(aspect - 1.5)
+		  If difference < smallestDifference Then
+		    smallestDifference = difference
+		    closestRatio = 1.5
+		  End If
+		  
+		  // 16:9 ratio.
+		  difference = Abs(aspect - (16/9))
+		  If difference < smallestDifference Then
+		    smallestDifference = difference
+		    closestRatio = 16/9
+		  End If
+		  
+		  // 2:1 ratio.
+		  difference = Abs(aspect - 2)
+		  If difference < smallestDifference Then
+		    smallestDifference = difference
+		    closestRatio = 2
+		  End If
+		  
+		  Var w, h As Integer
+		  Select Case closestRatio
+		  Case 4/3
+		    w = 1268
+		    h = 951
+		  Case 3/2
+		    w = 1344
+		    h = 896
+		  Case 16/9
+		    w = 1456
+		    h = 819
+		  Case 2
+		    w = 1568
+		    h = 784
+		  End Select
+		  
+		  // Create a new picture to return
+		  Var newPic As New Picture(w, h, 32)
+		  
+		  // Draw picture In the New size
+		  newPic.Graphics.DrawPicture(p, 0, 0, w, h, 0, 0, p.Width, p.Height)
+		  
+		  Return newPic
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0, Description = 49662061206D65737361676520726571756573742069732063757272656E746C79206265696E672068616E646C65642C2077652063616E63656C2069742E205072657365727665732074686520636F6E766572736174696F6E20686973746F72792E
 		Sub Stop()
 		  /// If a message request is currently being handled, we cancel it.
@@ -846,6 +950,20 @@ Implements AIKit.ChatProvider
 		  End If
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 54727565206966207468652063757272656E74206D6F64656C20737570706F72747320696E74657270726574696E6720696D616765732E
+		Function SupportsImages() As Boolean
+		  /// True if the current model supports interpreting images.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
+		  
+		  // I *think* all current Claude models support image interpretation:
+		  // https://docs.anthropic.com/en/docs/build-with-claude/vision
+		  
+		  Return True
+		  
+		End Function
 	#tag EndMethod
 
 

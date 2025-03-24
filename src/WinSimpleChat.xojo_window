@@ -312,12 +312,13 @@ End
 	#tag Event
 		Sub Opening()
 		  'Const MODEL = "claude-3-5-haiku-20241022"
-		  'Const MODEL = "claude-3-7-sonnet-20250219"
-		  ' Const MODEL = "deepseek-r1:14b"
-		  Const MODEL = "llava:13b"
+		  Const MODEL = "claude-3-7-sonnet-20250219"
+		  'Const MODEL = "deepseek-r1:14b"
+		  'Const MODEL = "llava:13b"
+		  'Const MODEL = "gemma3:27b"
 		  
-		  'Chat = New AIKit.Chat(MODEL, AIKit.Providers.Anthropic, KeySafe.AnthropicAPIKey)
-		  Chat = New AIKit.Chat(MODEL, AIKit.Providers.Ollama, "", KeySafe.OllamaEndpoint)
+		  Chat = New AIKit.Chat(MODEL, AIKit.Providers.Anthropic, KeySafe.AnthropicAPIKey)
+		  'Chat = New AIKit.Chat(MODEL, AIKit.Providers.Ollama, "", KeySafe.OllamaEndpoint)
 		  
 		  // Register some callbacks.
 		  Chat.APIErrorDelegate = AddressOf APIError
@@ -326,19 +327,6 @@ End
 		  Chat.MessageStartedDelegate = AddressOf MessageStarted
 		  Chat.MessageFinishedDelegate = AddressOf MessageFinished
 		  Chat.ThinkingReceivedDelegate = AddressOf ThinkingReceived
-		  
-		  ' // Get a picture.
-		  ' Var f As FolderItem = SpecialFolder.Desktop.Child("normal-cxr.jpg")
-		  ' Var cxr As Picture = Picture.Open(f)
-		  ' 
-		  ' ' First with llava
-		  ' Var response1 As AIKit.ChatResponse = Chat.AskWithPicture("What is this?", 0, cxr)
-		  ' 
-		  ' ' Then Claude.
-		  ' Chat.WithModel("claude-3-7-sonnet-20250219", AIKit.Providers.Anthropic, KeySafe.AnthropicAPIKey)
-		  ' Var response2 As AIKit.ChatResponse = Chat.AskWithPicture("What is this?", 0, cxr)
-		  ' 
-		  ' Break
 		  
 		End Sub
 	#tag EndEvent
