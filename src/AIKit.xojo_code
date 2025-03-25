@@ -20,6 +20,35 @@ Protected Module AIKit
 		Protected Delegate Sub MessageStarted(sender As AIKit . Chat, messageID As String, inputTokenCount As Integer)
 	#tag EndDelegateDeclaration
 
+	#tag Method, Flags = &h1, Description = 52657475726E7320616E206172726179206F6620616C6C20617661696C61626C65206D6F64656C7320666F7220746865207370656369666965642070726F76696465722E
+		Protected Function ModelsForProvider(provider As AIKit.Providers, apiKey As String, endpoint As String) As AIKit.ModelDescription()
+		  /// Returns an array of all available models for the specified provider.
+		  
+		  Var models() As AIKit.ModelDescription
+		  
+		  Select Case provider
+		  Case AIKit.Providers.Anthropic
+		    Var claude As New ClaudeProvider(Nil, apiKey, endpoint)
+		    If claude.IsValidAPIKey(apiKey) Then
+		      Return claude.Models
+		    Else
+		      Return models
+		    End If
+		    
+		  Case AIKit.Providers.Ollama
+		    Var ollama As New OllamaProvider(Nil, apiKey, endpoint)
+		    If ollama.IsValidEndpoint(endpoint) Then
+		      Return ollama.Models
+		    Else
+		      Return models
+		    End If
+		    
+		  Else
+		    Raise New InvalidArgumentException("Unsupport provider.")
+		  End Select
+		End Function
+	#tag EndMethod
+
 	#tag DelegateDeclaration, Flags = &h1
 		Protected Delegate Sub ThinkingReceived(sender As AIKit . Chat, content As String)
 	#tag EndDelegateDeclaration

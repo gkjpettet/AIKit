@@ -822,6 +822,10 @@ Implements AIKit.ChatProvider
 		  If data.BeginsWith("{""type"":""error""") Then
 		    ProcessError(data)
 		    Return
+		  ElseIf data.BeginsWith("event: error") Then
+		    data = data.Replace("event: error" + EndOfLine + "data: ", "")
+		    ProcessError(data)
+		    Return
 		  End If
 		  
 		  // Split the data into events.
