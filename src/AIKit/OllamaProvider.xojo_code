@@ -156,7 +156,6 @@ Implements AIKit.ChatProvider
 		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
 		  payload.Value("options") = options
 		  
-		  
 		  // Send the request asynchronously to the Ollama API.
 		  Try
 		    ConfigureNewConnection

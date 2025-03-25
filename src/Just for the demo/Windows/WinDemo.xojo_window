@@ -276,7 +276,7 @@ Begin DesktopWindow WinDemo
       Top             =   20
       Transparent     =   False
       Underline       =   False
-      ValidationMask  =   "#####"
+      ValidationMask  =   "-#####"
       Visible         =   True
       Width           =   59
    End
@@ -432,7 +432,7 @@ Begin DesktopWindow WinDemo
       Visible         =   True
       Width           =   100
    End
-   Begin DesktopListBox ListBox1
+   Begin DesktopListBox ListBoxImages
       AllowAutoDeactivate=   True
       AllowAutoHideScrollbars=   True
       AllowExpandableRows=   False
@@ -762,7 +762,7 @@ Begin DesktopWindow WinDemo
       HasBorder       =   True
       HasHorizontalScrollbar=   False
       HasVerticalScrollbar=   True
-      Height          =   316
+      Height          =   293
       HideSelection   =   True
       Index           =   -2147483648
       Italic          =   False
@@ -790,6 +790,72 @@ Begin DesktopWindow WinDemo
       Underline       =   False
       UnicodeMode     =   1
       ValidationMask  =   ""
+      Visible         =   True
+      Width           =   880
+   End
+   Begin DotLabel DotSupportsImages
+      AllowAutoDeactivate=   True
+      AllowFocus      =   False
+      AllowTabs       =   False
+      Backdrop        =   0
+      Caption         =   "Model supports images"
+      CaptionColor    =   &c000000
+      CondenseCaption =   True
+      DotBorderColor  =   &c000000
+      DotColor        =   &c00FF00
+      DotDiameter     =   16.0
+      DotHasBorder    =   False
+      DotPadding      =   5
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   12
+      Height          =   20
+      Index           =   -2147483648
+      Left            =   648
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   27
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   52
+      Transparent     =   True
+      Visible         =   True
+      Width           =   197
+   End
+   Begin DesktopLabel Info
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   20
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   False
+      Multiline       =   False
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   28
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   ""
+      TextAlignment   =   3
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   689
+      Transparent     =   False
+      Underline       =   False
       Visible         =   True
       Width           =   880
    End
@@ -873,6 +939,8 @@ End
 		  
 		  AwaitingResponse = False
 		  ButtonStop.Enabled = False
+		  
+		  Info.Text = response.TokensPerSecond.ToString + " tokens/second"
 		  
 		End Sub
 	#tag EndMethod
@@ -1025,6 +1093,8 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub SelectionChanged(item As DesktopMenuItem)
+		  #Pragma Unused item
+		  
 		  If Me.SelectedRowIndex = -1 Then Return
 		  If Keys = Nil Then Return
 		  
@@ -1038,6 +1108,35 @@ End
 	#tag EndEvent
 #tag EndEvents
 #tag Events PopupModel
+	#tag Event
+		Sub SelectionChanged(item As DesktopMenuItem)
+		  #Pragma Unused item
+		  
+		  If Chat = Nil Then Return
+		  
+		  Chat.WithModel(Me.SelectedRowText, PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), _
+		  APIKey, Endpoint)
+		  
+		  // Update the indicator that informs the user if the model supports images or not.
+		  Var dotColor, dotBordeColor As Color
+		  If Chat.SupportsImages Then
+		    DotSupportsImages.Caption = "Model supports images"
+		    dotColor = &c00FF00
+		    dotBordeColor = &c008F00
+		    ListBoxImages.Enabled = True
+		  Else
+		    DotSupportsImages.Caption = "Images not supported"
+		    dotColor = &cFF0000
+		    dotBordeColor = &cFF0000
+		    ListBoxImages.Enabled = False
+		  End If
+		  
+		  DotSupportsImages.DotColor = dotColor
+		  DotSupportsImages.DotBorderColor = dotBordeColor
+		  DotSupportsImages.Refresh
+		  
+		End Sub
+	#tag EndEvent
 #tag EndEvents
 #tag Events Label1
 	#tag Event
@@ -1070,6 +1169,10 @@ End
 		  Output.Text = Output.Text + "User:" + EndOfLine + Prompt.Text + EndOfLine + EndOfLine
 		  
 		  ButtonStop.Enabled = True
+		  
+		  Chat.MaxTokens = MaxTokens.Text.ToInteger
+		  Chat.MaxThinkingBudget = ThinkingBudget.Text.ToInteger
+		  Chat.ShouldThink = CheckBoxAllowThinking.Value
 		  
 		  Chat.Ask(Prompt.Text)
 		  AwaitingResponse = True
