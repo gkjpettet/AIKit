@@ -1248,6 +1248,8 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub DropObject(obj As DragItem, action As DragItem.Types)
+		  #Pragma Unused action
+		  
 		  If obj.PictureAvailable Then
 		    
 		    Me.Image =obj.Picture

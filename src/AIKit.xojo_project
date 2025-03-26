@@ -4,7 +4,6 @@ MinIDEVersion=20210300
 OrigIDEVersion=20240402
 Class=App;App.xojo_code;&h0000000046EF77FF;&h0000000000000000;false
 MenuBar=MainMenuBar;MainMenuBar.xojo_menu;&h00000000760067FF;&h0000000000000000;false
-DesktopWindow=WinSimpleChat;WinSimpleChat.xojo_window;&h000000003DBF27FF;&h0000000000000000;false
 BuildSteps=Build Automation;Build Automation.xojo_code;&h0000000039835FFF;&h0000000000000000;false
 Module=AIKit;AIKit.xojo_code;&h000000003D3E67FF;&h0000000000000000;false
 Class=Chat;AIKit/Chat.xojo_code;&h0000000003F22FFF;&h000000003D3E67FF;false
