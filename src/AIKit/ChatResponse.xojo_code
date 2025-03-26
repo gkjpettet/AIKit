@@ -60,7 +60,7 @@ Protected Class ChatResponse
 			  
 			End Get
 		#tag EndGetter
-		ResponseTime As Integer
+		ResponseTime As Double
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0, Description = 416E79207468696E6B696E6720636F6E74656E7420696E20746865206D6573736167652E
@@ -90,7 +90,7 @@ Protected Class ChatResponse
 	#tag ComputedProperty, Flags = &h0, Description = 546865206176657261676520746F6B656E7320706572207365636F6E6420666F72207468697320726573706F6E73652C20726F756E64656420646F776E20746F20746865206E65617265737420696E74656765722E20
 		#tag Getter
 			Get
-			  If ResponseTime = 0 Then Return 0
+			  If ResponseTime = 0 Then Return OutputTokenCount
 			  If OutputTokenCount < 0 Then Return 0
 			  
 			  Var thinkingTime As Double = 0
@@ -98,7 +98,13 @@ Protected Class ChatResponse
 			    thinkingTime = ThinkingTimeStop.SecondsFrom1970 - ThinkingTimeStart.SecondsFrom1970
 			  End If
 			  
-			  Return OutputTokenCount / (thinkingTime + ResponseTime)
+			  Var totalTime As Integer = thinkingTime + ResponseTime
+			  
+			  If totalTime = 0 Then
+			    Return OutputTokenCount
+			  Else
+			    Return OutputTokenCount / (thinkingTime + ResponseTime)
+			  End If
 			  
 			End Get
 		#tag EndGetter

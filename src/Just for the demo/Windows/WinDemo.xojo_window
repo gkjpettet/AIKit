@@ -347,7 +347,7 @@ Begin DesktopWindow WinDemo
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   False
+      LockRight       =   True
       LockTop         =   True
       MaximumCharactersAllowed=   0
       Multiline       =   True
@@ -400,85 +400,6 @@ Begin DesktopWindow WinDemo
       Visible         =   True
       Width           =   178
    End
-   Begin DesktopLabel LabelImages
-      AllowAutoDeactivate=   True
-      Bold            =   False
-      Enabled         =   True
-      FontName        =   "System"
-      FontSize        =   0.0
-      FontUnit        =   0
-      Height          =   20
-      Index           =   -2147483648
-      Italic          =   False
-      Left            =   569
-      LockBottom      =   False
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   False
-      LockTop         =   True
-      Multiline       =   False
-      Scope           =   2
-      Selectable      =   False
-      TabIndex        =   15
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Text            =   "Images:"
-      TextAlignment   =   0
-      TextColor       =   &c000000
-      Tooltip         =   ""
-      Top             =   84
-      Transparent     =   False
-      Underline       =   False
-      Visible         =   True
-      Width           =   100
-   End
-   Begin DesktopListBox ListBoxImages
-      AllowAutoDeactivate=   True
-      AllowAutoHideScrollbars=   True
-      AllowExpandableRows=   False
-      AllowFocusRing  =   False
-      AllowResizableColumns=   False
-      AllowRowDragging=   False
-      AllowRowReordering=   False
-      Bold            =   False
-      ColumnCount     =   1
-      ColumnWidths    =   ""
-      DefaultRowHeight=   -1
-      DropIndicatorVisible=   False
-      Enabled         =   True
-      FontName        =   "System"
-      FontSize        =   0.0
-      FontUnit        =   0
-      GridLineStyle   =   0
-      HasBorder       =   True
-      HasHeader       =   False
-      HasHorizontalScrollbar=   False
-      HasVerticalScrollbar=   True
-      HeadingIndex    =   -1
-      Height          =   110
-      Index           =   -2147483648
-      InitialValue    =   ""
-      Italic          =   False
-      Left            =   569
-      LockBottom      =   False
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   True
-      LockTop         =   True
-      RequiresSelection=   False
-      RowSelectionType=   0
-      Scope           =   2
-      TabIndex        =   16
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Tooltip         =   ""
-      Top             =   116
-      Transparent     =   False
-      Underline       =   False
-      Visible         =   True
-      Width           =   331
-      _ScrollWidth    =   -1
-   End
    Begin DesktopLabel Label1
       AllowAutoDeactivate=   True
       Bold            =   False
@@ -486,30 +407,30 @@ Begin DesktopWindow WinDemo
       FontName        =   "SmallSystem"
       FontSize        =   0.0
       FontUnit        =   0
-      Height          =   20
+      Height          =   72
       Index           =   -2147483648
       Italic          =   False
-      Left            =   569
+      Left            =   573
       LockBottom      =   False
       LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   False
+      LockLeft        =   False
+      LockRight       =   True
       LockTop         =   True
-      Multiline       =   False
+      Multiline       =   True
       Scope           =   2
       Selectable      =   False
       TabIndex        =   17
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "Drop images onto listbox to add to prompt"
+      Text            =   "Drop an image to the right to provide it to the model. AIKit supports multiple images but for this demo we support just one."
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   228
+      Top             =   116
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   289
+      Width           =   162
    End
    Begin DesktopTextArea Prompt
       AllowAutoDeactivate=   True
@@ -888,6 +809,60 @@ Begin DesktopWindow WinDemo
       VisualState     =   1
       Width           =   77
    End
+   Begin DesktopImageViewer ImageToSend
+      AllowAutoDeactivate=   True
+      AllowTabStop    =   True
+      Enabled         =   True
+      Height          =   122
+      Image           =   0
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Left            =   765
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   30
+      TabPanelIndex   =   0
+      Tooltip         =   ""
+      Top             =   84
+      Transparent     =   False
+      Visible         =   True
+      Width           =   135
+   End
+   Begin DesktopButton ButtonClearImage
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Clear Image"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   765
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   True
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   31
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   218
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   135
+   End
 End
 #tag EndDesktopWindow
 
@@ -970,6 +945,8 @@ End
 		  ButtonStop.Enabled = False
 		  
 		  Info.Text = response.TokensPerSecond.ToString + " tokens/second"
+		  
+		  ImageToSend.Image = Nil
 		  
 		End Sub
 	#tag EndMethod
@@ -1156,24 +1133,17 @@ End
 		    DotSupportsImages.Caption = "Model supports images"
 		    dotColor = &c00FF00
 		    dotBordeColor = &c008F00
-		    ListBoxImages.Enabled = True
+		    ImageToSend.Enabled = True
 		  Else
 		    DotSupportsImages.Caption = "Images not supported"
 		    dotColor = &cFF0000
 		    dotBordeColor = &cFF0000
-		    ListBoxImages.Enabled = False
+		    ImageToSend.Enabled = False
 		  End If
 		  
 		  DotSupportsImages.DotColor = dotColor
 		  DotSupportsImages.DotBorderColor = dotBordeColor
 		  DotSupportsImages.Refresh
-		  
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events ListBoxImages
-	#tag Event
-		Sub DropObject(obj As DragItem, action As DragItem.Types)
 		  
 		End Sub
 	#tag EndEvent
@@ -1216,7 +1186,12 @@ End
 		  Chat.ShouldThink = CheckBoxAllowThinking.Value
 		  Chat.SystemPrompt = SystemPrompt.Text
 		  
-		  Chat.Ask(Prompt.Text)
+		  If Chat.SupportsImages And ImageToSend.Image <> Nil Then
+		    Chat.AskWithPicture(Prompt.Text, ImageToSend.Image)
+		  Else
+		    Chat.Ask(Prompt.Text)
+		  End If
+		  
 		  AwaitingResponse = True
 		  
 		  Prompt.Text = ""
@@ -1259,6 +1234,37 @@ End
 	#tag Event
 		Sub ValueChanged()
 		  Chat.UnlimitedResponse = Me.Value
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ImageToSend
+	#tag Event
+		Sub Opening()
+		  Me.AcceptPictureDrop
+		  Me.AcceptFileDrop(MyFileTypes.Jpeg)
+		  Me.AcceptFileDrop(MyFileTypes.Png)
+		  
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub DropObject(obj As DragItem, action As DragItem.Types)
+		  If obj.PictureAvailable Then
+		    
+		    Me.Image =obj.Picture
+		    
+		  ElseIf obj.FolderItemAvailable Then
+		    
+		    Me.Image = Picture.Open(obj.FolderItem)
+		    
+		  End If
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonClearImage
+	#tag Event
+		Sub Pressed()
+		  ImageToSend.Image = Nil
 		End Sub
 	#tag EndEvent
 #tag EndEvents
