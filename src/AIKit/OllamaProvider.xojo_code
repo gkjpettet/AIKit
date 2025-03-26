@@ -776,6 +776,17 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0, Description = 54727565206966207468652063757272656E74206D6F64656C20737570706F727473206E6F206C696D6974206F6E20746865206E756D626572206F6620746F6B656E732072657475726E656420696E2074686520726573706F6E73652E
+		Function SupportsUnlimitedTokens() As Boolean
+		  /// True if the current model supports no limit on the number of tokens returned in the response.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
+		  
+		  Return True
+		  
+		End Function
+	#tag EndMethod
+
 
 	#tag Property, Flags = &h1
 		Protected mConnection As URLConnection

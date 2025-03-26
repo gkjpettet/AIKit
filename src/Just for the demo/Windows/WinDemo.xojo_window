@@ -1004,6 +1004,7 @@ End
 		  Chat.MessageFinishedDelegate = AddressOf MessageFinished
 		  Chat.ThinkingReceivedDelegate = AddressOf ThinkingReceived
 		  
+		  CheckBoxNoMaxTokenLimit.Enabled = Chat.SupportsUnlimitedTokens
 		End Sub
 	#tag EndMethod
 
@@ -1133,6 +1134,7 @@ End
 		  Chat.WithModel(PopupModel.SelectedRowText, _
 		  PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), APIKey, Endpoint)
 		  
+		  CheckBoxNoMaxTokenLimit.Enabled = Chat.SupportsUnlimitedTokens
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -1145,6 +1147,8 @@ End
 		  
 		  Chat.WithModel(Me.SelectedRowText, PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), _
 		  APIKey, Endpoint)
+		  
+		  CheckBoxNoMaxTokenLimit.Enabled = Chat.SupportsUnlimitedTokens
 		  
 		  // Update the indicator that informs the user if the model supports images or not.
 		  Var dotColor, dotBordeColor As Color
@@ -1163,6 +1167,13 @@ End
 		  DotSupportsImages.DotColor = dotColor
 		  DotSupportsImages.DotBorderColor = dotBordeColor
 		  DotSupportsImages.Refresh
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ListBoxImages
+	#tag Event
+		Sub DropObject(obj As DragItem, action As DragItem.Types)
 		  
 		End Sub
 	#tag EndEvent
