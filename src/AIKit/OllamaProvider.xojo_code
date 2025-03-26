@@ -72,7 +72,11 @@ Implements AIKit.ChatProvider
 		  // Additional payload options.
 		  Var options As New Dictionary
 		  options.Value("temperature") = mOwner.Temperature
-		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
+		  If mOwner.UnlimitedResponse Then
+		    options.Value("num_predict") = -1
+		  Else
+		    options.Value("num_predict") = mOwner.MaxTokens
+		  End If
 		  payload.Value("options") = options
 		  
 		  // Send the request synchronously to the Ollama API.
@@ -153,7 +157,11 @@ Implements AIKit.ChatProvider
 		  // Additional payload options.
 		  Var options As New Dictionary
 		  options.Value("temperature") = mOwner.Temperature
-		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
+		  If mOwner.UnlimitedResponse Then
+		    options.Value("num_predict") = -1
+		  Else
+		    options.Value("num_predict") = mOwner.MaxTokens
+		  End If
 		  payload.Value("options") = options
 		  
 		  // Send the request asynchronously to the Ollama API.
@@ -224,7 +232,11 @@ Implements AIKit.ChatProvider
 		  // Additional payload options.
 		  Var options As New Dictionary
 		  options.Value("temperature") = mOwner.Temperature
-		  options.Value("num_predict") = mOwner.MaxTokens // If this is -1 then infinite tokens are allowed.
+		  If mOwner.UnlimitedResponse Then
+		    options.Value("num_predict") = -1
+		  Else
+		    options.Value("num_predict") = mOwner.MaxTokens
+		  End If
 		  payload.Value("options") = options
 		  
 		  // Send the request synchronously to the Ollama API.

@@ -157,7 +157,7 @@ Begin DesktopWindow WinDemo
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   491
+      Left            =   573
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
@@ -217,7 +217,7 @@ Begin DesktopWindow WinDemo
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   228
+      Left            =   317
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
@@ -297,7 +297,7 @@ Begin DesktopWindow WinDemo
       Hint            =   ""
       Index           =   -2147483648
       Italic          =   False
-      Left            =   413
+      Left            =   502
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
@@ -310,7 +310,7 @@ Begin DesktopWindow WinDemo
       TabIndex        =   12
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "2048"
+      Text            =   "1024"
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
@@ -728,7 +728,7 @@ Begin DesktopWindow WinDemo
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   767
+      Left            =   765
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   False
@@ -744,7 +744,7 @@ Begin DesktopWindow WinDemo
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   133
+      Width           =   135
    End
    Begin DesktopTextArea Output
       AllowAutoDeactivate=   True
@@ -858,6 +858,35 @@ Begin DesktopWindow WinDemo
       Underline       =   False
       Visible         =   True
       Width           =   880
+   End
+   Begin DesktopCheckBox CheckBoxNoMaxTokenLimit
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "No limit"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   228
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   2
+      TabIndex        =   29
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   "If checked then no limit will be placed on the number of tokens the model should respond with. Not all APIs support this."
+      Top             =   20
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      VisualState     =   1
+      Width           =   77
    End
 End
 #tag EndDesktopWindow
@@ -1171,8 +1200,10 @@ End
 		  ButtonStop.Enabled = True
 		  
 		  Chat.MaxTokens = MaxTokens.Text.ToInteger
+		  Chat.UnlimitedResponse = CheckBoxNoMaxTokenLimit.Value
 		  Chat.MaxThinkingBudget = ThinkingBudget.Text.ToInteger
 		  Chat.ShouldThink = CheckBoxAllowThinking.Value
+		  Chat.SystemPrompt = SystemPrompt.Text
 		  
 		  Chat.Ask(Prompt.Text)
 		  AwaitingResponse = True
@@ -1210,6 +1241,13 @@ End
 		  Var popover As New WinAPIKeys(Self.Keys)
 		  popover.ShowPopover(Me)
 		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckBoxNoMaxTokenLimit
+	#tag Event
+		Sub ValueChanged()
+		  Chat.UnlimitedResponse = Me.Value
 		End Sub
 	#tag EndEvent
 #tag EndEvents
