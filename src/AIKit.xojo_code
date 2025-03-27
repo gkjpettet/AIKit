@@ -28,9 +28,9 @@ Protected Module AIKit
 		  
 		  Select Case provider
 		  Case AIKit.Providers.Anthropic
-		    Var claude As New ClaudeProvider(Nil, apiKey, endpoint)
-		    If claude.IsValidAPIKey(apiKey) Then
-		      Return claude.Models
+		    Var anthropic As New AnthropicProvider(Nil, apiKey, endpoint)
+		    If anthropic.IsValidAPIKey(apiKey) Then
+		      Return anthropic.Models
 		    Else
 		      Return models
 		    End If
@@ -78,7 +78,7 @@ Protected Module AIKit
 		Some LLMs support the analysis of images. Chatting with these models is done through the
 		`AskWithPicture()` methods. 
 		
-		Some `ChatProviders` (such as the `ClaudeProvider`) will automatically resize Xojo pictures to fit 
+		Some `ChatProviders` (such as the `AnthropicProvider`) will automatically resize Xojo pictures to fit 
 		within the constraints of the models provided by that provider, others will not. 
 		
 		For example, the `OllamaProvider` expects the end user (i.e. you!) to resize Xojo pictures before 

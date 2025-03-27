@@ -80,7 +80,7 @@ Protected Class Chat
 		  // Set the provider.
 		  Select Case provider
 		  Case AIKit.Providers.Anthropic
-		    MyProvider = New ClaudeProvider(Self, apiKey, endpoint)
+		    MyProvider = New AnthropicProvider(Self, apiKey, endpoint)
 		    
 		  Case AIKit.Providers.Ollama
 		    MyProvider = New OllamaProvider(Self, apiKey, endpoint)
@@ -392,6 +392,22 @@ Protected Class Chat
 			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SupportsUnlimitedTokens"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="UnlimitedResponse"
+			Visible=false
+			Group="Behavior"
+			InitialValue="True"
+			Type="Boolean"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

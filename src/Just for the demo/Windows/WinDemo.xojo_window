@@ -171,6 +171,7 @@ Begin DesktopWindow WinDemo
       Top             =   20
       Transparent     =   False
       Underline       =   False
+      Value           =   False
       Visible         =   True
       VisualState     =   0
       Width           =   117
@@ -717,6 +718,7 @@ Begin DesktopWindow WinDemo
    Begin DotLabel DotSupportsImages
       AllowAutoDeactivate=   True
       AllowFocus      =   False
+      AllowFocusRing  =   False
       AllowTabs       =   False
       Backdrop        =   0
       Caption         =   "Model supports images"
@@ -805,11 +807,13 @@ Begin DesktopWindow WinDemo
       Top             =   20
       Transparent     =   False
       Underline       =   False
+      Value           =   False
       Visible         =   True
       VisualState     =   1
       Width           =   77
    End
    Begin DesktopImageViewer ImageToSend
+      Active          =   False
       AllowAutoDeactivate=   True
       AllowTabStop    =   True
       Enabled         =   True
@@ -823,6 +827,7 @@ Begin DesktopWindow WinDemo
       LockLeft        =   False
       LockRight       =   True
       LockTop         =   True
+      PanelIndex      =   0
       Scope           =   0
       TabIndex        =   30
       TabPanelIndex   =   0
@@ -831,6 +836,10 @@ Begin DesktopWindow WinDemo
       Transparent     =   False
       Visible         =   True
       Width           =   135
+      _mIndex         =   0
+      _mInitialParent =   ""
+      _mName          =   ""
+      _mPanelIndex    =   0
    End
    Begin DesktopButton ButtonClearImage
       AllowAutoDeactivate=   True
@@ -1504,6 +1513,30 @@ End
 		Group="Deprecated"
 		InitialValue="False"
 		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="APIKey"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="AwaitingResponse"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Endpoint"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="String"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior

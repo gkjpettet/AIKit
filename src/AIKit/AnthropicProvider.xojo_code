@@ -1,5 +1,5 @@
 #tag Class
-Protected Class ClaudeProvider
+Protected Class AnthropicProvider
 Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C20612071756572792E
 		Sub Ask(what As String)
@@ -56,7 +56,7 @@ Implements AIKit.ChatProvider
 		    payload.Value("system") = mOwner.SystemPrompt
 		  End If
 		  
-		  // Send the request synchronously to the Claude API.
+		  // Send the request synchronously to the Anthropic API.
 		  Try
 		    Var connection As New URLConnection
 		    
@@ -136,7 +136,7 @@ Implements AIKit.ChatProvider
 		    payload.Value("system") = mOwner.SystemPrompt
 		  End If
 		  
-		  // Send the request asynchronously to the Claude API.
+		  // Send the request asynchronously to the Anthropic API.
 		  Try
 		    ConfigureNewConnection
 		    
@@ -202,7 +202,7 @@ Implements AIKit.ChatProvider
 		    payload.Value("system") = mOwner.SystemPrompt
 		  End If
 		  
-		  // Send the request synchronously to the Claude API.
+		  // Send the request synchronously to the Anthropic API.
 		  Try
 		    Var connection As New URLConnection
 		    
@@ -307,15 +307,15 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 52657475726E732061206E6577204D6F64656C4465736372697074696F6E2066726F6D207468652064696374696F6E6172792072657475726E65642062792074686520436C6175646520415049207768656E207175657279696E672074686520606D6F64656C736020656E64706F696E742E
+	#tag Method, Flags = &h21, Description = 52657475726E732061206E6577204D6F64656C4465736372697074696F6E2066726F6D207468652064696374696F6E6172792072657475726E65642062792074686520416E7468726F70696320415049207768656E207175657279696E672074686520606D6F64656C736020656E64706F696E742E
 		Private Function DictionaryToModelDescription(d As Dictionary) As ModelDescription
-		  /// Returns a new ModelDescription from the dictionary returned by the Claude API when querying the
+		  /// Returns a new ModelDescription from the dictionary returned by the Anthropic API when querying the
 		  /// `models` endpoint.
 		  
 		  Var id As String = d.Value("id")
 		  Var name As String = d.Value("display_name")
 		  
-		  // Since the Claude API returns the creation date in RFC 3339 format, we just need the first 
+		  // Since the Anthropic API returns the creation date in RFC 3339 format, we just need the first 
 		  // 10 characters (YYYY-MM-DD).
 		  Var created As DateTime = DateTime.FromString(d.Value("created_at").StringValue.Left(10))
 		  
@@ -323,9 +323,9 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 52657475726E732054727565206966207468652073706563696669656420415049206B65792069732076616C69642E
+	#tag Method, Flags = &h0, Description = 52657475726E73205472756520696620606B65796020697320612076616C696420416E7468726F70696320415049206B6579206F722046616C73652069662069742069736E27742E
 		Function IsValidAPIKey(apiKey As String) As Boolean
-		  /// Returns True if `key` is a valid Claude API key or False if it isn't.
+		  /// Returns True if `key` is a valid Anthropic API key or False if it isn't.
 		  
 		  Var connection As New URLConnection
 		  
@@ -382,7 +382,7 @@ Implements AIKit.ChatProvider
 		    For Each p As Picture In m.Pictures
 		      Var imageContent As New Dictionary("type" : "image")
 		      Var source As New Dictionary("type" : "base64", "media_type" : "image/jpeg")
-		      // The Claude API places some restrictions on the size of images the API accepts:
+		      // The Anthropic API places some restrictions on the size of images the API accepts:
 		      // https://docs.anthropic.com/en/docs/build-with-claude/vision
 		      Var resizedPic As Picture = ResizePicture(p)
 		      source.Value("data") = EncodeBase64(resizedPic.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0)
@@ -450,9 +450,9 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 50726F636573736573206120636F6E74656E745F626C6F636B5F64656C7461206576656E742066726F6D2074686520436C61756465204150492E
+	#tag Method, Flags = &h21, Description = 50726F636573736573206120636F6E74656E745F626C6F636B5F64656C7461206576656E742066726F6D2074686520416E7468726F706963204150492E
 		Private Sub ProcessContentBlockDelta(data As Dictionary)
-		  /// Processes a content_block_delta event from the Claude API.
+		  /// Processes a content_block_delta event from the Anthropic API.
 		  ///
 		  /// data: {
 		  ///   "type": "content_block_delta"
@@ -489,9 +489,9 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
+	#tag Method, Flags = &h21, Description = 50726F636573736573206120636F6E74656E745F626C6F636B5F7374617274206576656E742066726F6D2074686520416E7468726F706963204150492E
 		Private Sub ProcessContentBlockStart(data As Dictionary)
-		  /// Processes a content_block_start event from the Claude API.
+		  /// Processes a content_block_start event from the Anthropic API.
 		  ///
 		  /// data: {
 		  /// "type": "content_block_start",
@@ -542,7 +542,7 @@ Implements AIKit.ChatProvider
 		Private Sub ProcessError(jsonData As String)
 		  /// Processes an API error.
 		  ///
-		  /// Claude API error structure:
+		  /// Anthropic API error structure:
 		  /// {
 		  ///   "type": "error",
 		  ///   "error": {
@@ -645,9 +645,9 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 50726F6365737365732061206D6573736167655F64656C7461206576656E742066726F6D2074686520436C61756465204150492E
+	#tag Method, Flags = &h21, Description = 50726F6365737365732061206D6573736167655F64656C7461206576656E742066726F6D2074686520416E7468726F706963204150492E
 		Private Sub ProcessMessageDelta(data As Dictionary)
-		  /// Processes a message_delta event from the Claude API.
+		  /// Processes a message_delta event from the Anthropic API.
 		  ///
 		  /// data: {
 		  ///   "type": "message_delta"
@@ -733,9 +733,9 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 50726F63657373657320746865204A534F4E2072657475726E65642066726F6D2074686520436C617564652041504920666F7220612073796E6368726F6E6F7573206D65737361676520726571756573742E2052657475726E732061206043686174526573706F6E736560206F626A6563742E
+	#tag Method, Flags = &h21, Description = 50726F63657373657320746865204A534F4E2072657475726E65642066726F6D2074686520416E7468726F7069632041504920666F7220612073796E6368726F6E6F7573206D65737361676520726571756573742E2052657475726E732061206043686174526573706F6E736560206F626A6563742E
 		Private Function ProcessSynchronousResponse(responseJSON As String) As AIKit.ChatResponse
-		  /// Processes the JSON returned from the Claude API for a synchronous message request.
+		  /// Processes the JSON returned from the Anthropic API for a synchronous message request.
 		  /// Returns a `ChatResponse` object.
 		  
 		  #Pragma BreakOnExceptions False
@@ -796,7 +796,7 @@ Implements AIKit.ChatProvider
 		    mOutputTokenCount = usage.Lookup("output_tokens", 0)
 		  End If
 		  
-		  // The Claude API doesn't provide a way to determine how long the model spent thinking
+		  // The Anthropic API doesn't provide a way to determine how long the model spent thinking
 		  // when making a synchronous call. We will therefore set the thinking time to 0 and the message
 		  // time will reflect both thinking and the actual message.
 		  mThinkingTimeStop = Nil
@@ -808,9 +808,9 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 48616E646C657320746865206172726976616C206F66206E657720646174612066726F6D20616E2061637469766520436C617564652041504920636F6E6E656374696F6E2E
+	#tag Method, Flags = &h21, Description = 48616E646C657320746865206172726976616C206F66206E657720646174612066726F6D20616E2061637469766520416E7468726F7069632041504920636F6E6E656374696F6E2E
 		Private Sub ReceivingProgressedDelegate(sender As URLConnection, bytesRecieved As Int64, totalBytes As Int64, newData As String)
-		  /// Handles the arrival of new data from an active Claude API connection.
+		  /// Handles the arrival of new data from an active Anthropic API connection.
 		  
 		  #Pragma Unused sender
 		  #Pragma Unused bytesRecieved
@@ -858,9 +858,9 @@ Implements AIKit.ChatProvider
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1, Description = 526573697A6573206174686520706173736564207069637475726520746F20636F6D706C7920776974682074686520436C617564652041504920726571756972656D656E74732E
+	#tag Method, Flags = &h1, Description = 526573697A6573206174686520706173736564207069637475726520746F20636F6D706C7920776974682074686520416E7468726F7069632041504920726571756972656D656E74732E
 		Protected Function ResizePicture(p As Picture) As Picture
-		  /// Resizes athe passed picture to comply with the Claude API requirements.
+		  /// Resizes athe passed picture to comply with the Anthropic API requirements.
 		  ///
 		  /// https://docs.anthropic.com/en/docs/build-with-claude/vision
 		  
@@ -878,7 +878,7 @@ Implements AIKit.ChatProvider
 		    End If
 		  End If
 		  
-		  // In addition to square images, the Claude API gives 4 aspect ratios with different limits
+		  // In addition to square images, the Anthropic API gives 4 aspect ratios with different limits
 		  // on the image size. We need to find the closes aspect ratio.
 		  Var difference, smallestDifference As Double
 		  Var aspect As Double = p.Width / p.Height
@@ -962,7 +962,7 @@ Implements AIKit.ChatProvider
 		  ///
 		  /// Part of the AIKit.ChatProvider interface.
 		  
-		  // I *think* all current Claude models support image interpretation:
+		  // I *think* all current Anthropic models support image interpretation:
 		  // https://docs.anthropic.com/en/docs/build-with-claude/vision
 		  
 		  Return True

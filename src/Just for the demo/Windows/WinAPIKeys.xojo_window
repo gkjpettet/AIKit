@@ -204,6 +204,7 @@ Begin DesktopWindow WinAPIKeys
    Begin DotLabel DotAnthropic
       AllowAutoDeactivate=   True
       AllowFocus      =   False
+      AllowFocusRing  =   False
       AllowTabs       =   False
       Backdrop        =   0
       Caption         =   "Caption"
@@ -238,6 +239,7 @@ Begin DesktopWindow WinAPIKeys
    Begin DotLabel DotOllama
       AllowAutoDeactivate=   True
       AllowFocus      =   False
+      AllowFocusRing  =   False
       AllowTabs       =   False
       Backdrop        =   0
       Caption         =   "Caption"
@@ -346,7 +348,7 @@ End
 		  /// Validates the keys and endpoints.
 		  
 		  // Anthropic.
-		  Var claude As New AIKit.ClaudeProvider(Nil, Anthropic.Text)
+		  Var claude As New AIKit.AnthropicProvider(Nil, Anthropic.Text)
 		  SetDotStatus(DotAnthropic, claude.IsValidAPIKey(Anthropic.Text))
 		  
 		  // Ollama.
@@ -381,8 +383,6 @@ End
 
 #tag EndWindowCode
 
-#tag Events Ollama
-#tag EndEvents
 #tag Events ButtonDone
 	#tag Event
 		Sub Pressed()
