@@ -878,7 +878,7 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Opening()
-		  Self.Keys = New DemoKeys(KeySafe.AnthropicAPIKey, KeySafe.OllamaEndpoint)
+		  Self.Keys = New DemoKeys(KeySafe.AnthropicAPIKey, KeySafe.OllamaEndpoint, KeySafe.OpenAIAPIKey)
 		  
 		  PopupProvider.SelectedRowIndex = 0
 		  UpdateModelsPopup(PopupProvider.RowTagAt(0))
@@ -1025,6 +1025,9 @@ End
 		  Case AIKit.Providers.Ollama
 		    endpoint = Keys.OllamaEndpoint
 		    
+		  Case AIKit.Providers.OpenAI
+		    apiKey = Keys.OpenAIAPIKey
+		    
 		  Else
 		    Raise New InvalidArgumentException("Unsupported provider.")
 		  End Select
@@ -1050,8 +1053,13 @@ End
 			  Select Case PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex)
 			  Case AIKit.Providers.Anthropic
 			    Return Keys.AnthropicAPIKey
+			    
 			  Case AIKit.Providers.Ollama
 			    Return ""
+			    
+			  Case AIKit.Providers.OpenAI
+			    Return Keys.OpenAIAPIKey
+			    
 			  Else
 			    Raise New UnsupportedOperationException("Unsupported provider.")
 			  End Select
@@ -1076,8 +1084,13 @@ End
 			  Select Case PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex)
 			  Case AIKit.Providers.Anthropic
 			    Return ""
+			    
 			  Case AIKit.Providers.Ollama
 			    Return Keys.OllamaEndpoint
+			    
+			  Case AIKit.Providers.OpenAI
+			    Return ""
+			    
 			  Else
 			    Raise New UnsupportedOperationException("Unsupported provider.")
 			  End Select
@@ -1101,6 +1114,8 @@ End
 		  Me.RowTagAt(Me.LastAddedRowIndex) = AIKit.Providers.Anthropic
 		  Me.AddRow("Ollama")
 		  Me.RowTagAt(Me.LastAddedRowIndex) = AIKit.Providers.Ollama
+		  Me.AddRow("OpenAI")
+		  Me.RowTagAt(Me.LastAddedRowIndex) = AIKit.Providers.OpenAI
 		  
 		  // Select Anthropic to start with.
 		  Me.SelectedRowIndex = 0

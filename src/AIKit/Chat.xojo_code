@@ -85,6 +85,9 @@ Protected Class Chat
 		  Case AIKit.Providers.Ollama
 		    MyProvider = New OllamaProvider(Self, apiKey, endpoint)
 		    
+		  Case AIKit.Providers.OpenAI
+		    MyProvider = New OpenAIProvider(Self, apiKey, endpoint)
+		    
 		  Else
 		    Raise New InvalidArgumentException("Unsupported provider.")
 		  End Select
@@ -218,10 +221,6 @@ Protected Class Chat
 		ModelName As String
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h1, Description = 5468652074656D706572617475726520746F2075736520666F7220726573706F6E7365732028636C616D706564206265747765656E203020616E642031292E
-		Protected mTemperature As Double
-	#tag EndProperty
-
 	#tag Property, Flags = &h1
 		Protected MyProvider As AIKit.ChatProvider
 	#tag EndProperty
@@ -248,26 +247,9 @@ Protected Class Chat
 		SystemPrompt As String
 	#tag EndProperty
 
-	#tag ComputedProperty, Flags = &h0, Description = 5468652063757272656E74206D6F64656C2074656D70657261747572652C20636C616D706564206265747765656E20302E3020616E6420312E302E
-		#tag Getter
-			Get
-			  Return mTemperature
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  If value < 0 Then
-			    mTemperature = 0
-			  ElseIf value > 1 Then
-			    mTemperature = 1
-			  Else
-			    mTemperature = value
-			  End If
-			  
-			End Set
-		#tag EndSetter
-		Temperature As Double
-	#tag EndComputedProperty
+	#tag Property, Flags = &h0, Description = 5468652074656D706572617475726520746F2075736520666F7220726573706F6E7365732E205468652076616C756520726571756972656420766172696573206265747765656E206D6F64656C732E20557375616C6C79206265747765656E20302D312E20412076616C7565206F66202D312077696C6C2075736520746865206D6F64656C27732064656661756C7420776865726520706F737369626C652E
+		Temperature As Double = 0.5
+	#tag EndProperty
 
 	#tag Property, Flags = &h0, Description = 5468652064656C656761746520746F20696E766F6B65207768656E207468696E6B696E6720636F6E74656E742069732072656365697665642E204D6179206265204E696C2E
 		ThinkingReceivedDelegate As AIKit.ThinkingReceived
@@ -327,14 +309,6 @@ Protected Class Chat
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="Temperature"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Double"
 			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty

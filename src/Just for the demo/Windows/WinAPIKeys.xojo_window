@@ -123,7 +123,7 @@ Begin DesktopWindow WinAPIKeys
       TextAlignment   =   3
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   52
+      Top             =   84
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -163,7 +163,7 @@ Begin DesktopWindow WinAPIKeys
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   52
+      Top             =   84
       Transparent     =   False
       Underline       =   False
       ValidationMask  =   ""
@@ -266,7 +266,7 @@ Begin DesktopWindow WinAPIKeys
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   55
+      Top             =   87
       Transparent     =   True
       Visible         =   True
       Width           =   16
@@ -302,6 +302,114 @@ Begin DesktopWindow WinAPIKeys
       Visible         =   True
       Width           =   80
    End
+   Begin DesktopLabel LabelOpenAI
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   20
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Multiline       =   False
+      Scope           =   2
+      Selectable      =   False
+      TabIndex        =   8
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   "OpenAI"
+      TextAlignment   =   3
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   52
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   80
+   End
+   Begin DesktopTextField OpenAI
+      AllowAutoDeactivate=   True
+      AllowFocusRing  =   True
+      AllowSpellChecking=   False
+      AllowTabs       =   False
+      BackgroundColor =   &cFFFFFF
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Format          =   ""
+      HasBorder       =   True
+      Height          =   22
+      Hint            =   "API Key"
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   112
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   True
+      LockTop         =   True
+      MaximumCharactersAllowed=   0
+      Password        =   False
+      ReadOnly        =   False
+      Scope           =   2
+      TabIndex        =   9
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   ""
+      TextAlignment   =   0
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   52
+      Transparent     =   False
+      Underline       =   False
+      ValidationMask  =   ""
+      Visible         =   True
+      Width           =   270
+   End
+   Begin DotLabel DotOpenAI
+      AllowAutoDeactivate=   True
+      AllowFocus      =   False
+      AllowFocusRing  =   False
+      AllowTabs       =   False
+      Backdrop        =   0
+      Caption         =   "Caption"
+      CaptionColor    =   &c000000
+      CondenseCaption =   True
+      DotBorderColor  =   &c008F0000
+      DotColor        =   &c00FF0000
+      DotDiameter     =   16.0
+      DotHasBorder    =   True
+      DotPadding      =   0
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   12
+      Height          =   16
+      Index           =   -2147483648
+      Left            =   394
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   10
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   55
+      Transparent     =   True
+      Visible         =   True
+      Width           =   16
+   End
 End
 #tag EndDesktopWindow
 
@@ -311,6 +419,7 @@ End
 		  If Keys <> Nil Then
 		    Anthropic.Text = Keys.AnthropicAPIKey
 		    Ollama.Text = Keys.OllamaEndpoint
+		    OpenAI.Text = Keys.OpenAIAPIKey
 		  End If
 		  
 		End Sub
@@ -355,6 +464,9 @@ End
 		  Var op As New AIKit.OllamaProvider(Nil, Ollama.Text)
 		  SetDotStatus(DotOllama, op.IsValidEndpoint(Ollama.Text))
 		  
+		  // OpenAI.
+		  Var oai As New AIKit.OpenAIProvider(Nil, OpenAI.Text)
+		  SetDotStatus(DotOpenAI, oai.IsValidAPIKey(OpenAI.Text))
 		  
 		End Sub
 	#tag EndMethod
@@ -388,6 +500,7 @@ End
 		Sub Pressed()
 		  Keys.AnthropicAPIKey = Anthropic.Text
 		  Keys.OllamaEndpoint = Ollama.Text
+		  keys.OpenAIAPIKey = OpenAI.Text
 		  
 		  Self.Close
 		End Sub

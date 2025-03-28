@@ -9,6 +9,7 @@ Module=AIKit;AIKit.xojo_code;&h000000003D3E67FF;&h0000000000000000;false
 Class=Chat;AIKit/Chat.xojo_code;&h0000000003F22FFF;&h000000003D3E67FF;false
 Interface=ChatProvider;AIKit/ChatProvider.xojo_code;&h000000001560C7FF;&h000000003D3E67FF;false
 Class=AnthropicProvider;AIKit/AnthropicProvider.xojo_code;&h0000000032AB27FF;&h000000003D3E67FF;false
+Class=OpenAIProvider;AIKit/OpenAIProvider.xojo_code;&h0000000051E7C7FF;&h000000003D3E67FF;false
 Class=APIException;AIKit/APIException.xojo_code;&h0000000053FFFFFF;&h000000003D3E67FF;false
 Class=ChatMessage;AIKit/ChatMessage.xojo_code;&h000000003CC45FFF;&h000000003D3E67FF;false
 Class=ModelDescription;AIKit/ModelDescription.xojo_code;&h00000000026D17FF;&h000000003D3E67FF;false

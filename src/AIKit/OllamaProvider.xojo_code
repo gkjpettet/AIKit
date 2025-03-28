@@ -156,7 +156,7 @@ Implements AIKit.ChatProvider
 		  
 		  // Additional payload options.
 		  Var options As New Dictionary
-		  options.Value("temperature") = mOwner.Temperature
+		  options.Value("temperature") = Clamp(mOwner.Temperature, 0, 1)
 		  If mOwner.UnlimitedResponse Then
 		    options.Value("num_predict") = -1
 		  Else
@@ -231,7 +231,7 @@ Implements AIKit.ChatProvider
 		  
 		  // Additional payload options.
 		  Var options As New Dictionary
-		  options.Value("temperature") = mOwner.Temperature
+		  options.Value("temperature") = Clamp(mOwner.Temperature, 0, 1)
 		  If mOwner.UnlimitedResponse Then
 		    options.Value("num_predict") = -1
 		  Else
@@ -309,6 +309,17 @@ Implements AIKit.ChatProvider
 		  AskWithMessage(m)
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1, Description = 52657475726E73206076616C75656020636C616D706564206265747765656E20606D696E696D756D6020616E6420606D6178696D756D602E
+		Protected Function Clamp(value As Double, minimum As Double, maximum As Double) As Double
+		  /// Returns `value` clamped between `minimum` and `maximum`.
+		  
+		  If value < minimum Then Return minimum
+		  If value > maximum Then Return maximum
+		  Return value
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 436F6E666967757265732061206E65772055524C436F6E6E656374696F6E2C20686F6F6B696E67207570206576656E742068616E646C65727320616E642072656D6F76696E67206F6C64206576656E742068616E646C657273206173206E65656465642E

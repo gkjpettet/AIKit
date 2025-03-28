@@ -1,9 +1,11 @@
 #tag Class
 Protected Class DemoKeys
 	#tag Method, Flags = &h0
-		Sub Constructor(anthropicAPIKey As String, ollamaEndpoint As String)
+		Sub Constructor(anthropicAPIKey As String, ollamaEndpoint As String, openAIAPIKey As String)
 		  Self.AnthropicAPIKey = anthropicAPIKey
 		  Self.OllamaEndpoint = ollamaEndpoint
+		  Self.OpenAIAPIKey = openAIAPIKey
+		  
 		End Sub
 	#tag EndMethod
 
@@ -20,6 +22,10 @@ Protected Class DemoKeys
 
 	#tag Property, Flags = &h0
 		OllamaEndpoint As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		OpenAIAPIKey As String
 	#tag EndProperty
 
 
@@ -62,6 +68,22 @@ Protected Class DemoKeys
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="AnthropicAPIKey"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="OllamaEndpoint"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior

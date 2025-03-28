@@ -43,8 +43,16 @@ Protected Module AIKit
 		      Return models
 		    End If
 		    
+		  Case AIKit.Providers.OpenAI
+		    Var oai As New OpenAIProvider(Nil, apiKey, endpoint)
+		    If oai.IsValidAPIKey(apiKey) Then
+		      Return oai.Models
+		    Else
+		      Return models
+		    End If
+		    
 		  Else
-		    Raise New InvalidArgumentException("Unsupport provider.")
+		    Raise New InvalidArgumentException("Unsupported provider.")
 		  End Select
 		End Function
 	#tag EndMethod
@@ -92,7 +100,8 @@ Protected Module AIKit
 
 	#tag Enum, Name = Providers, Flags = &h0
 		Anthropic
-		Ollama
+		  Ollama
+		OpenAI
 	#tag EndEnum
 
 	#tag Enum, Name = Roles, Type = Integer, Flags = &h1

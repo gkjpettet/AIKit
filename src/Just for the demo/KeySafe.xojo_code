@@ -36,6 +36,19 @@ Protected Module KeySafe
 		Protected OllamaEndpoint As String
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h1, Description = 52657475726E73206D79204F70656E414920415049206B65792066726F6D2074686520707269766174652E6A736F6E2066696C6520696E20746865207265706F2E
+		#tag Getter
+			Get
+			  Var apiKeys As Dictionary = ParsedJSONData.Lookup("apiKeys", Nil)
+			  If apiKeys = Nil Then Return ""
+			  
+			  Return apiKeys.Lookup("openai", "")
+			  
+			End Get
+		#tag EndGetter
+		Protected OpenAIAPIKey As String
+	#tag EndComputedProperty
+
 	#tag ComputedProperty, Flags = &h21, Description = 52657475726E732074686520706172736564204A534F4E20646174612077697468696E206069676E6F72652F707269766174652E6A736F6E602E
 		#tag Getter
 			Get
