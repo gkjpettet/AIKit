@@ -156,7 +156,19 @@ Implements AIKit.ChatProvider
 		  
 		  // Additional payload options.
 		  Var options As New Dictionary
-		  options.Value("temperature") = Clamp(mOwner.Temperature, 0, 1)
+		  
+		  // Temperature.
+		  Var tempValue As Double
+		  If mOwner.ShouldThink Then
+		    // Thinking models should use a temperature of 1.0.
+		    tempValue = 1.0
+		  ElseIf mOwner.UseDefaultTemperature Then
+		    tempValue = 0.7
+		  Else
+		    tempValue = Clamp(mOwner.Temperature, 0, 1)
+		  End If
+		  options.Value("temperature") = tempValue
+		  
 		  If mOwner.UnlimitedResponse Then
 		    options.Value("num_predict") = -1
 		  Else
@@ -231,7 +243,19 @@ Implements AIKit.ChatProvider
 		  
 		  // Additional payload options.
 		  Var options As New Dictionary
-		  options.Value("temperature") = Clamp(mOwner.Temperature, 0, 1)
+		  
+		  // Temperature.
+		  Var tempValue As Double
+		  If mOwner.ShouldThink Then
+		    // Thinking models should use a temperature of 1.0.
+		    tempValue = 1.0
+		  ElseIf mOwner.UseDefaultTemperature Then
+		    tempValue = 0.7
+		  Else
+		    tempValue = Clamp(mOwner.Temperature, 0, 1)
+		  End If
+		  options.Value("temperature") = tempValue
+		  
 		  If mOwner.UnlimitedResponse Then
 		    options.Value("num_predict") = -1
 		  Else

@@ -872,6 +872,109 @@ Begin DesktopWindow WinDemo
       Visible         =   True
       Width           =   135
    End
+   Begin DesktopLabel LabelMaxTokens1
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   286
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Multiline       =   False
+      Scope           =   2
+      Selectable      =   False
+      TabIndex        =   32
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   "Temperature"
+      TextAlignment   =   3
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   84
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   100
+   End
+   Begin DesktopTextField Temperature
+      AllowAutoDeactivate=   True
+      AllowFocusRing  =   True
+      AllowSpellChecking=   False
+      AllowTabs       =   False
+      BackgroundColor =   &cFFFFFF
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Format          =   ""
+      HasBorder       =   True
+      Height          =   22
+      Hint            =   ""
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   398
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MaximumCharactersAllowed=   0
+      Password        =   False
+      ReadOnly        =   False
+      Scope           =   2
+      TabIndex        =   33
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   "1.0"
+      TextAlignment   =   0
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   83
+      Transparent     =   False
+      Underline       =   False
+      ValidationMask  =   "#.#"
+      Visible         =   True
+      Width           =   43
+   End
+   Begin DesktopCheckBox CheckBoxDefaultTemperature
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Caption         =   "Default"
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   453
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Scope           =   2
+      TabIndex        =   34
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   "If checked then the value in the temperature text field will not be sent and the default for the selected model will be used."
+      Top             =   84
+      Transparent     =   False
+      Underline       =   False
+      Value           =   False
+      Visible         =   True
+      VisualState     =   1
+      Width           =   77
+   End
 End
 #tag EndDesktopWindow
 
@@ -884,6 +987,9 @@ End
 		  UpdateModelsPopup(PopupProvider.RowTagAt(0))
 		  
 		  SetupChat
+		  
+		  Temperature.Text = chat.Temperature.ToString(Nil, "#.#")
+		  CheckBoxDefaultTemperature.Value = Chat.UseDefaultTemperature
 		  
 		End Sub
 	#tag EndEvent
@@ -1209,6 +1315,7 @@ End
 		  Chat.MaxThinkingBudget = ThinkingBudget.Text.ToInteger
 		  Chat.ShouldThink = CheckBoxAllowThinking.Value
 		  Chat.SystemPrompt = SystemPrompt.Text
+		  Chat.Temperature = Temperature.Text.ToDouble
 		  
 		  If Chat.SupportsImages And ImageToSend.Image <> Nil Then
 		    Chat.AskWithPicture(Prompt.Text, ImageToSend.Image)
@@ -1291,6 +1398,20 @@ End
 	#tag Event
 		Sub Pressed()
 		  ImageToSend.Image = Nil
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckBoxDefaultTemperature
+	#tag Event
+		Sub ValueChanged()
+		  Chat.UseDefaultTemperature = Me.Value
+		  If Me.Value Then
+		    Temperature.Enabled = False
+		  Else
+		    Temperature.Enabled = True
+		  End If
+		  
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents

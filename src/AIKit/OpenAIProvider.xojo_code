@@ -69,8 +69,18 @@ Implements AIKit.ChatProvider
 		    payload.Value("max_completion_tokens") = mOwner.MaxTokens
 		  End If
 		  
-		  // OpenAI uses a temperature of between 0 - 2.
-		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, Clamp(mOwner.Temperature, 0, 2))
+		  // Temperature.
+		  Var tempValue As Double
+		  If mOwner.ShouldThink Then
+		    // Thinking models should use a temperature of 1.0.
+		    tempValue = 1.0
+		  ElseIf mOwner.UseDefaultTemperature Then
+		    tempValue = 1.0
+		  Else
+		    // OpenAI uses a temperature of between 0 - 2.
+		    tempValue = Clamp(mOwner.Temperature, 0, 2)
+		  End If
+		  payload.Value("temperature") = tempValue
 		  
 		  payload.Value("stream") = True
 		  payload.Value("stream_options") = New Dictionary("include_usage" : True)
@@ -147,11 +157,20 @@ Implements AIKit.ChatProvider
 		    payload.Value("max_completion_tokens") = mOwner.MaxTokens
 		  End If
 		  
-		  // OpenAI uses a temperature of between 0 - 2.
-		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, Clamp(mOwner.Temperature, 0, 2))
+		  // Temperature.
+		  Var tempValue As Double
+		  If mOwner.ShouldThink Then
+		    // Thinking models should use a temperature of 1.0.
+		    tempValue = 1.0
+		  ElseIf mOwner.UseDefaultTemperature Then
+		    tempValue = 1.0
+		  Else
+		    // OpenAI uses a temperature of between 0 - 2.
+		    tempValue = Clamp(mOwner.Temperature, 0, 2)
+		  End If
+		  payload.Value("temperature") = tempValue
 		  
-		  payload.Value("stream") = True
-		  payload.Value("stream_options") = New Dictionary("include_usage" : True)
+		  payload.Value("stream") = False
 		  
 		  // Send the request synchronously to the Anthropic API.
 		  Try
@@ -341,7 +360,8 @@ Implements AIKit.ChatProvider
 		    Var contents() As Dictionary
 		    For Each p As Picture In m.Pictures
 		      Var imageContent As New Dictionary("type" : "image_url")
-		      Var encoded As String = EncodeBase64(p.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0)
+		      Var resizedPic As Picture = ResizePicture(p)
+		      Var encoded As String = EncodeBase64(resizedPic.ToData(Picture.Formats.JPEG, Picture.QualityHigh), 0)
 		      Var imageURL As New Dictionary( _
 		      "url" : "data:image/jpeg;base64," + encoded)
 		      imageContent.Value("image_url") = imageURL
@@ -543,8 +563,6 @@ Implements AIKit.ChatProvider
 		  
 		  #Pragma BreakOnExceptions False
 		  
-		  #Pragma Warning "TODO: How are errors returned synchronously?"
-		  
 		  // Parse the JSON to a dictionary.
 		  Var data As Dictionary
 		  Try
@@ -557,6 +575,17 @@ Implements AIKit.ChatProvider
 		    End If
 		  End Try
 		  
+		  // Did an error occur?
+		  If data.HasKey("error") Then
+		    Var errObj As Dictionary = data.Value("error")
+		    If mOwner.APIErrorDelegate <> Nil Then
+		      mOwner.APIErrorDelegate.Invoke(mOwner, errObj.Value("message"))
+		      Return AIKit.ChatResponse.Empty
+		    Else
+		      Raise New AIKit.APIException(errObj.Value("message"))
+		    End If
+		  End If
+		  
 		  Var choicesObjs() As Object = data.Value("choices")
 		  For Each choicesObj As Object In choicesObjs
 		    Var choice As Dictionary = Dictionary(choicesObj)
@@ -568,7 +597,34 @@ Implements AIKit.ChatProvider
 		  
 		  mIncomingMessageID = data.Lookup("id", "")
 		  
-		  ProcessUsageAndFinish(data.Value("usage"))
+		  Var usage As Dictionary = data.Value("usage")
+		  
+		  mInputTokenCount = usage.Lookup("prompt_tokens", 0)
+		  mOutputTokenCount = usage.Lookup("completion_tokens", 0)
+		  
+		  Var completionDetails As Dictionary = usage.Lookup("completion_tokens_details", Nil)
+		  If completionDetails <> Nil Then
+		    mThinkingTokenCount = completionDetails.Lookup("reasoning_tokens", 0)
+		  End If
+		  
+		  // Add the assistant's response to the conversation history.
+		  mOwner.Messages.Add(New AIKit.ChatMessage("assistant", String.FromArray(mLastResponse, "")))
+		  
+		  mMessageTimeStop = DateTime.Now
+		  mIsAwaitingResponse = False
+		  
+		  Var responseContent As String = If(mLastResponse.Count > 0, String.FromArray(mLastResponse, ""), "")
+		  
+		  // OpenAI doesn't return the thinking tokens.
+		  Var thinkingContent As String = ""
+		  
+		  Var response As New AIKit.ChatResponse(responseContent, thinkingContent, mMessageTimeStart, _
+		  mMessageTimeStop, mInputTokenCount, mOutputTokenCount, mThinkingTimeStart, mThinkingTimeStop)
+		  
+		  Return response
+		  
+		  
+		  
 		  
 		End Function
 	#tag EndMethod
@@ -667,6 +723,65 @@ Implements AIKit.ChatProvider
 		Function RequiresEndpoint() As Boolean
 		  // The user doesn't need to specify an endpoint for the OpenAI API.
 		  Return False
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ResizePicture(p As Picture) As Picture
+		  /// Resizes a Picture to fit within the constraints of the OpenAI API.
+		  ///
+		  /// The OpenAI API limits pictures to 768 x 2000 px.
+		  
+		  // Squares.
+		  If p.Width = p.Height Then
+		    If p.Width <= 768 Then
+		      Return p
+		    Else
+		      // Too big. Resize to 768 x 768
+		      Var newPic As New Picture(768, 768, 32)
+		      newPic.Graphics.DrawPicture(p, 0, 0, 768, 768, 0, 0, p.Width, p.Height)
+		    End If
+		  End If
+		  
+		  // Rectangles.
+		  If p.Width > p.Height Then
+		    If p.Width <= 2000 And p.Height <= 768 Then Return p
+		    
+		    // Cap height at 768.
+		    Return ResizeToFit(p, 2000, 768)
+		    
+		  Else // h > w
+		    If p.Height <= 2000 And p.Width <= 768 Then Return p
+		    
+		    // Cap height at 2000.
+		    Return ResizeToFit(p, 768, 2000)
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1, Description = 52657475726E732061206E65772070696374757265207468617420697320616E206173706563742D726174696F2D707265736572766564207265706C696361206F662074686520706173736564207069637475726520636F6E747261696E656420746F207468652073706563696669656420776964746820616E64206865696768742E
+		Protected Function ResizeToFit(p As Picture, maxWidth As Integer, maxHeight As Integer) As Picture
+		  /// Returns a new picture that is an aspect-ratio-preserved replica of the passed picture contrained to the
+		  /// specified width and height.
+		  ///
+		  /// See: https://forum.xojo.com/t/proportionally-resizing-a-picture/16732/3
+		  
+		  // Calculate the scale ratio.
+		  Var ratio As Double = Min(maxHeight / p.Height, maxWidth / p.Width)
+		  
+		  /// Calculate new size.
+		  Var w As Integer = p.Width * ratio
+		  Var h As Integer = p.Height * ratio
+		  
+		  /// Create a new picture To return.
+		  Var newPic As New Picture(w, h, 32)
+		  
+		  /// Draw picture in the new size.
+		  newPic.Graphics.DrawPicture(p, 0, 0, w, h, 0, 0, p.Width, p.Height)
+		  
+		  Return newPic
+		  
 		End Function
 	#tag EndMethod
 

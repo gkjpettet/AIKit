@@ -57,7 +57,19 @@ Implements AIKit.ChatProvider
 		  payload.Value("model") = mowner.ModelName
 		  payload.Value("messages") = messages
 		  payload.Value("max_tokens") = mOwner.MaxTokens
-		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, Clamp(mOwner.Temperature, 0, 1))
+		  
+		  // Temperature.
+		  Var tempValue As Double
+		  If mOwner.ShouldThink Then
+		    // Thinking models should use a temperature of 1.0.
+		    tempValue = 1.0
+		  ElseIf mOwner.UseDefaultTemperature Then
+		    tempValue = 0.7
+		  Else
+		    tempValue = Clamp(mOwner.Temperature, 0, 1)
+		  End If
+		  payload.Value("temperature") = tempValue
+		  
 		  payload.Value("stream") = True
 		  If mOwner.ShouldThink Then
 		    payload.Value("thinking") = _
@@ -123,7 +135,19 @@ Implements AIKit.ChatProvider
 		  payload.Value("model") = mowner.ModelName
 		  payload.Value("messages") = messages
 		  payload.Value("max_tokens") = mOwner.MaxTokens
-		  payload.Value("temperature") = If(mOwner.ShouldThink, 1, Clamp(mOwner.Temperature, 0, 1))
+		  
+		  // Temperature.
+		  Var tempValue As Double
+		  If mOwner.ShouldThink Then
+		    // Thinking models should use a temperature of 1.0.
+		    tempValue = 1.0
+		  ElseIf mOwner.UseDefaultTemperature Then
+		    tempValue = 0.7
+		  Else
+		    tempValue = Clamp(mOwner.Temperature, 0, 1)
+		  End If
+		  payload.Value("temperature") = tempValue
+		  
 		  payload.Value("stream") = False
 		  If mOwner.ShouldThink Then
 		    payload.Value("thinking") = _
