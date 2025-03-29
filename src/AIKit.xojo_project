@@ -1,5 +1,5 @@
 Type=Desktop
-RBProjectVersion=2024.042
+RBProjectVersion=2025.01
 MinIDEVersion=20210300
 OrigIDEVersion=20240402
 Class=App;App.xojo_code;&h0000000046EF77FF;&h0000000000000000;false
@@ -15,7 +15,6 @@ Class=ChatMessage;AIKit/ChatMessage.xojo_code;&h000000003CC45FFF;&h000000003D3E6
 Class=ModelDescription;AIKit/ModelDescription.xojo_code;&h00000000026D17FF;&h000000003D3E67FF;false
 Class=ChatResponse;AIKit/ChatResponse.xojo_code;&h000000004B6F5FFF;&h000000003D3E67FF;false
 Folder=Just for the demo;Just for the demo;&h0000000037CE97FF;&h0000000000000000;false
-Plist=Info;../resources/Info.plist;&h000000000CA67FFF;&h0000000037CE97FF;false
 FileTypeSet=MyFileTypes;Just for the demo/MyFileTypes.xojo_filetypeset;&h000000003CC8DFFF;&h0000000037CE97FF;false
 Module=KeySafe;Just for the demo/KeySafe.xojo_code;&h000000003CB13FFF;&h0000000037CE97FF;false
 Class=DemoKeys;Just for the demo/DemoKeys.xojo_code;&h0000000026971FFF;&h0000000037CE97FF;false
@@ -70,3 +69,5 @@ OptimizationLevel=0
 WindowsVersions={1f676c76-80e1-4239-95bb-83d0f6d0da78}|{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}
 WindowsRunAs=0
 MacOSMinimumVersion=
+PlistEntries={"root":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>NSAppTransportSecurity</key>\n\t<dict>\n\t\t<key>NSAllowsArbitraryLoads</key>\n\t\t<true/>\n\t</dict>\n</dict>\n</plist>"}
+AppCategory=
