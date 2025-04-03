@@ -98,6 +98,23 @@ Protected Module AIKit
 	#tag EndNote
 
 
+	#tag ComputedProperty, Flags = &h1, Description = 53696E676C65746F6E20636C61737320666F722073746F72696E6720415049206B65797320616E6420656E64706F696E74732E
+		#tag Getter
+			Get
+			  Static creds As New AIKit.APICredentials
+			  
+			  Return creds
+			  
+			End Get
+		#tag EndGetter
+		Protected Credentials As AIKit.APICredentials
+	#tag EndComputedProperty
+
+
+	#tag Constant, Name = VERSION, Type = String, Dynamic = False, Default = \"1.1.0", Scope = Protected
+	#tag EndConstant
+
+
 	#tag Enum, Name = Providers, Flags = &h0
 		Anthropic
 		  Ollama

@@ -10,6 +10,7 @@ Begin DesktopWindow WinAPIKeys
    HasFullScreenButton=   False
    HasMaximizeButton=   True
    HasMinimizeButton=   True
+   HasTitleBar     =   True
    Height          =   174
    ImplicitInstance=   False
    MacProcID       =   0
@@ -416,24 +417,13 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Opening()
-		  If Keys <> Nil Then
-		    Anthropic.Text = Keys.AnthropicAPIKey
-		    Ollama.Text = Keys.OllamaEndpoint
-		    OpenAI.Text = Keys.OpenAIAPIKey
-		  End If
+		  Anthropic.Text = AIKit.Credentials.Anthropic
+		  Ollama.Text = AIKit.Credentials.Ollama
+		  OpenAI.Text = AIKit.Credentials.OpenAI
 		  
 		End Sub
 	#tag EndEvent
 
-
-	#tag Method, Flags = &h0
-		Sub Constructor(keys As DemoKeys)
-		  Self.Keys = keys
-		  
-		  // Calling the overridden superclass constructor.
-		  Super.Constructor
-		End Sub
-	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 536574732074686520737461747573206F66206120706172746963756C61722073746174757320646F742E
 		Private Sub SetDotStatus(dot As DotLabel, valid As Boolean)
@@ -488,19 +478,15 @@ End
 		DotColorValid As Color = &c00FF00
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
-		Private Keys As DemoKeys
-	#tag EndProperty
-
 
 #tag EndWindowCode
 
 #tag Events ButtonDone
 	#tag Event
 		Sub Pressed()
-		  Keys.AnthropicAPIKey = Anthropic.Text
-		  Keys.OllamaEndpoint = Ollama.Text
-		  keys.OpenAIAPIKey = OpenAI.Text
+		  AIKit.Credentials.Anthropic = Anthropic.Text
+		  AIKit.Credentials.Ollama = Ollama.Text
+		  AIKit.Credentials.OpenAI = OpenAI.Text
 		  
 		  Self.Close
 		End Sub
@@ -514,6 +500,14 @@ End
 	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
+	#tag ViewProperty
+		Name="HasTitleBar"
+		Visible=true
+		Group="Frame"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
 	#tag ViewProperty
 		Name="Name"
 		Visible=true

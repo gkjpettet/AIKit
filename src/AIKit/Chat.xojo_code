@@ -77,15 +77,28 @@ Protected Class Chat
 
 	#tag Method, Flags = &h0
 		Sub Constructor(modelName As String, provider As AIKit.Providers, apiKey As String = "", endpoint As String = "")
+		  /// Constructs a new Chat object using the specified provider and model.
+		  /// If an API key and/or endpoint are not supplied then the default values in 
+		  /// `AIKit.Credentials` will be used.
+		  
 		  // Set the provider.
 		  Select Case provider
 		  Case AIKit.Providers.Anthropic
-		    MyProvider = New AnthropicProvider(Self, apiKey, endpoint)
+		    // Default to the key stored in AIKit's credentials?
+		    If apiKey = "" Then apiKey = AIKit.Credentials.Anthropic
+		    
+		    MyProvider = New AnthropicProvider(Self, apiKey)
 		    
 		  Case AIKit.Providers.Ollama
-		    MyProvider = New OllamaProvider(Self, apiKey, endpoint)
+		    // Default to the endpoint stored in AIKit's credentials?
+		    If apiKey = "" And endpoint = "" Then endpoint = AIKit.Credentials.Ollama
+		    
+		    MyProvider = New OllamaProvider(Self, "", endpoint)
 		    
 		  Case AIKit.Providers.OpenAI
+		    // Default to the key stored in AIKit's credentials?
+		    If apiKey = "" Then apiKey = AIKit.Credentials.OpenAI
+		    
 		    MyProvider = New OpenAIProvider(Self, apiKey, endpoint)
 		    
 		  Else
@@ -381,6 +394,22 @@ Protected Class Chat
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="UnlimitedResponse"
+			Visible=false
+			Group="Behavior"
+			InitialValue="True"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Temperature"
+			Visible=false
+			Group="Behavior"
+			InitialValue="0.5"
+			Type="Double"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="UseDefaultTemperature"
 			Visible=false
 			Group="Behavior"
 			InitialValue="True"

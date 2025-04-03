@@ -10,6 +10,7 @@ Begin DesktopWindow WinDemo
    HasFullScreenButton=   False
    HasMaximizeButton=   True
    HasMinimizeButton=   True
+   HasTitleBar     =   True
    Height          =   720
    ImplicitInstance=   True
    MacProcID       =   0
@@ -42,7 +43,7 @@ Begin DesktopWindow WinDemo
       LockRight       =   False
       LockTop         =   True
       Scope           =   2
-      SelectedRowIndex=   0
+      SelectedRowIndex=   -1
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
@@ -103,7 +104,7 @@ Begin DesktopWindow WinDemo
       LockRight       =   False
       LockTop         =   True
       Scope           =   2
-      SelectedRowIndex=   0
+      SelectedRowIndex=   -1
       TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
@@ -981,8 +982,6 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Opening()
-		  Self.Keys = New DemoKeys(KeySafe.AnthropicAPIKey, KeySafe.OllamaEndpoint, KeySafe.OpenAIAPIKey)
-		  
 		  PopupProvider.SelectedRowIndex = 0
 		  UpdateModelsPopup(PopupProvider.RowTagAt(0))
 		  
@@ -1016,6 +1015,19 @@ End
 		  End If
 		  
 		  Output.Text = ""
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Constructor()
+		  // Set up my API keys from the `private.json` file in the repo.
+		  AIKit.Credentials.Anthropic = KeySafe.AnthropicAPIKey
+		  AIKit.Credentials.Ollama = KeySafe.OllamaEndpoint
+		  AIKit.Credentials.OpenAI = KeySafe.OpenAIAPIKey
+		  
+		  // Calling the overridden superclass constructor.
+		  Super.Constructor
 		  
 		End Sub
 	#tag EndMethod
@@ -1085,8 +1097,8 @@ End
 		  /// Sets up our chat instance.
 		  
 		  // Create a new chat instance using the selected model and provider.
-		  Chat = New AIKit.Chat(PopupModel.SelectedRowText, PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), _
-		  APIKey, Endpoint)
+		  Chat = New AIKit.Chat(PopupModel.SelectedRowText, _
+		  PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), APIKey, Endpoint)
 		  
 		  // Hook up our delegates to the chat's events.
 		  Chat.APIErrorDelegate = AddressOf APIError
@@ -1126,13 +1138,13 @@ End
 		  
 		  Select Case provider
 		  Case AIKit.Providers.Anthropic
-		    apiKey = Keys.AnthropicAPIKey
+		    apiKey = AIKit.Credentials.Anthropic
 		    
 		  Case AIKit.Providers.Ollama
-		    endpoint = Keys.OllamaEndpoint
+		    endpoint = AIKit.Credentials.Ollama
 		    
 		  Case AIKit.Providers.OpenAI
-		    apiKey = Keys.OpenAIAPIKey
+		    apiKey = AIKit.Credentials.OpenAI
 		    
 		  Else
 		    Raise New InvalidArgumentException("Unsupported provider.")
@@ -1158,13 +1170,13 @@ End
 			  
 			  Select Case PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex)
 			  Case AIKit.Providers.Anthropic
-			    Return Keys.AnthropicAPIKey
+			    Return AIKit.Credentials.Anthropic
 			    
 			  Case AIKit.Providers.Ollama
 			    Return ""
 			    
 			  Case AIKit.Providers.OpenAI
-			    Return Keys.OpenAIAPIKey
+			    Return AIKit.Credentials.OpenAI
 			    
 			  Else
 			    Raise New UnsupportedOperationException("Unsupported provider.")
@@ -1192,7 +1204,7 @@ End
 			    Return ""
 			    
 			  Case AIKit.Providers.Ollama
-			    Return Keys.OllamaEndpoint
+			    Return AIKit.Credentials.Ollama
 			    
 			  Case AIKit.Providers.OpenAI
 			    Return ""
@@ -1205,10 +1217,6 @@ End
 		#tag EndGetter
 		Endpoint As String
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h0
-		Keys As DemoKeys
-	#tag EndProperty
 
 
 #tag EndWindowCode
@@ -1233,13 +1241,13 @@ End
 		  #Pragma Unused item
 		  
 		  If Me.SelectedRowIndex = -1 Then Return
-		  If Keys = Nil Then Return
 		  
 		  // Update the models popup.
 		  UpdateModelsPopup(Me.RowTagAt(Me.SelectedRowIndex))
 		  
-		  Chat.WithModel(PopupModel.SelectedRowText, _
-		  PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), APIKey, Endpoint)
+		  SetupChat
+		  ' Chat.WithModel(PopupModel.SelectedRowText, _
+		  ' PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), APIKey, Endpoint)
 		  
 		  CheckBoxNoMaxTokenLimit.Enabled = Chat.SupportsUnlimitedTokens
 		End Sub
@@ -1355,7 +1363,7 @@ End
 		Sub Pressed()
 		  // Show the API keys & endpoints popover, passing in the known keys and endpoints.
 		  
-		  Var popover As New WinAPIKeys(Self.Keys)
+		  Var popover As New WinAPIKeys
 		  popover.ShowPopover(Me)
 		  
 		End Sub
@@ -1416,6 +1424,14 @@ End
 	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
+	#tag ViewProperty
+		Name="HasTitleBar"
+		Visible=true
+		Group="Frame"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
 	#tag ViewProperty
 		Name="Name"
 		Visible=true
@@ -1657,7 +1673,7 @@ End
 		Group="Behavior"
 		InitialValue=""
 		Type="String"
-		EditorType=""
+		EditorType="MultiLineEditor"
 	#tag EndViewProperty
 	#tag ViewProperty
 		Name="AwaitingResponse"
@@ -1673,6 +1689,6 @@ End
 		Group="Behavior"
 		InitialValue=""
 		Type="String"
-		EditorType=""
+		EditorType="MultiLineEditor"
 	#tag EndViewProperty
 #tag EndViewBehavior
