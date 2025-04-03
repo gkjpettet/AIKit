@@ -4,7 +4,7 @@
 
 ## About
 
-LLMs are popular in the tech world as of the time of writing (March 2025) and many programmers are building impressive tools on top of them. `AIKit` provides a way for Xojo programmers to chat (using both text and images) with LLMs from Xojo code both synchronously and asynchronously using a standardised `Chat` object. The `Chat` object abstracts away the API complexities of different providers and even allows switching between providers within the same conversation.
+LLMs are popular and many programmers are building impressive tools on top of them. `AIKit` provides a way for Xojo programmers to chat (using both text and images) with LLMs from Xojo code both synchronously and asynchronously using a standardised `Chat` object. The `Chat` object abstracts away the API complexities of different providers and even allows switching between providers within the same conversation.
 
 ## Usage
 
@@ -79,6 +79,27 @@ Chat.ThinkingReceivedDelegate = AddressOf ThinkingReceived
 chat.Ask("Hello")
 ```
 
+## Default API keys & endpoints
+
+As demonstrated above, you can pass the required API key (or in the case of Ollama, the API endpoint) to a `Chat` instance. However, if you omit both the API key and endpoint parameters, the `Chat` object will attempt to use default keys for the requested provider. The default keys are stored in the `AIKit` module itself:
+
+```xojo
+// Set the keys you want to use in your app. A good place to do this is 
+// in `App.Opening` but it'll work so long as they are set before you
+// create any `Chat` instances.
+AIKit.Credentials.Anthropic = "your-anthropic-key"
+AIKit.Credentials.Ollama = "the-ollama-endpoint-url"
+AIKit.Credentials.OpenAI = "the-openai-key"
+
+// Now creating a chat is much cleaner since we only pass two parameters:
+Var chatgpt As New Chat("o1-mini", AIKit.Providers.OpenAI)
+chatgpt.Ask("Hi")
+
+// Switch models mid-conversation:
+chatgpt.WithModel("o3-mini", AIKit.Providers.OpenAI)
+chatgpt.Ask("Are you smarter now?")
+```
+
 ## Provider support
 
 `AIKit` uses the concept of _Providers_. A Provider is a vendor of an LLM. At present, the following providers are supported:
@@ -106,8 +127,19 @@ Included in the repo is the `AIKit` module and a demo application that allows yo
 }
 ```
 
-This will provide the `KeySafe` module in the demo app with access to your API keys. This is not needed when using `AIKit` in your own projects - just to make the demo work.
+This will provide the `KeySafe` module in the demo app with access to your API keys. This is not needed when using `AIKit` in your own projects - it's just to make the demo work. Here's a screenshot of where you should place the file:
+
+![JSON file][private-json]
+
+If you don't have an API key or endpoint for one of the providers in the JSON file structure above, just leave the value of the key as an empty string e.g:
+
+```json
+"apiKeys": {
+	"anthropic": ""
+}
+```
 
 On macOS, you'll need to add an entry to the plist for any project using `AIKit` to give permission to the app to call any URL. To do this I have bundled an `Info.plist` within the `resources/` folder of the repo. You can either drop this into your project and Xojo will include it in the build app plist or, if you're using Xojo 2025r1 or greater, I've added the required plist keys in the IDE's plist editor. If you don't do this you'll see Xojo network exceptions.
 
-[delegates documentation]:https://documentation.xojo.com/api/data_types/additional_types/delegate.html 
+[delegates documentation]:https://documentation.xojo.com/api/data_types/additional_types/delegate.html
+[private-json]: https://images.garrypettet.com/projects/aikit-private-json-file.png
