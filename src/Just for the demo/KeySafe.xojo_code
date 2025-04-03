@@ -52,6 +52,8 @@ Protected Module KeySafe
 	#tag ComputedProperty, Flags = &h21, Description = 52657475726E732074686520706172736564204A534F4E20646174612077697468696E206069676E6F72652F707269766174652E6A736F6E602E
 		#tag Getter
 			Get
+			  #Pragma BreakOnExceptions False
+			  
 			  Try
 			    
 			    Var tin As TextInputStream = TextInputStream.Open(KeyFile)
