@@ -367,7 +367,7 @@ Implements AIKit.ChatProvider
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 52657475726E732061204E657720604D6F64656C4465736372697074696F6E602066726F6D207468652064696374696F6E6172792072657475726E656420627920746865204F6C6C616D6120415049207768656E207175657279696E672074686520607461677360206F72206070736020656E64706F696E74732E
-		Private Function DictionaryToModelDescription(d As Dictionary) As ModelDescription
+		Private Function DictionaryToModelDescription(d As Dictionary) As OpenModelDescription
 		  /// Returns a New `ModelDescription` from the dictionary returned by the Ollama API when 
 		  /// querying the `tags` or `ps` endpoints.
 		  
@@ -392,7 +392,7 @@ Implements AIKit.ChatProvider
 		  Var size As Integer = d.Lookup("size", 0)
 		  Var sizeVRAM As Integer = d.Lookup("size_vram", 0)
 		  
-		  Return New ModelDescription(id, name, created, paramSize, quant, size, sizeVRAM)
+		  Return New OpenModelDescription(id, name, created, paramSize, quant, size, sizeVRAM)
 		  
 		End Function
 	#tag EndMethod

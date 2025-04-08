@@ -403,12 +403,8 @@ Implements AIKit.ChatProvider
 		    supportedEndpoints.Add(featureVariant.StringValue)
 		  Next featureVariant
 		  
-		  Var desc As New GeminiModelDescription(id, name, created, "", "", 0, 0)
-		  
-		  desc.Description = d.Lookup("description", "")
-		  desc.InputTokenLimit = d.Lookup("inputTokenLimit", 0)
-		  desc.OutputTokenLimit = d.Lookup("outputTokenLimit", 0)
-		  desc.SupportedEndpoints = supportedEndpoints
+		  Var desc As New GeminiModelDescription(id, name, created, d.Lookup("description", ""), _
+		  d.Lookup("inputTokenLimit", 0), d.Lookup("outputTokenLimit", 0), supportedEndpoints)
 		  
 		  Return desc
 		End Function

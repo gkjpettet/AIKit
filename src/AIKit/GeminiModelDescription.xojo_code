@@ -1,6 +1,22 @@
 #tag Class
 Protected Class GeminiModelDescription
 Inherits AIKit.ModelDescription
+	#tag Method, Flags = &h0
+		Sub Constructor(id As String, name As String, created As DateTime, description As String, inputTokenLimit As Integer, outputTokenLimit As Integer, supportedEndpoints() As String)
+		  Super.Constructor(id, name, created)
+		  
+		  Self.Description = description
+		  Self.InputTokenLimit = inputTokenLimit
+		  Self.OutputTokenLimit = outputTokenLimit
+		  
+		  For Each endpoint As String In supportedEndpoints
+		    Self.SupportedEndpoints.Add(endpoint)
+		  Next endpoint
+		  
+		End Sub
+	#tag EndMethod
+
+
 	#tag Note, Name = About
 		Adds additional properties that are returned by the Gemini API for each model.
 		

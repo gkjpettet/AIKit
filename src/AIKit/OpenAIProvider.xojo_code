@@ -301,7 +301,7 @@ Implements AIKit.ChatProvider
 		  // The OpenAI API returns the creation date as a Unix timestamp in seconds
 		  Var created As New DateTime(d.Value("created").IntegerValue)
 		  
-		  Return New ModelDescription(id, name, created, "", "", 0, 0)
+		  Return New ModelDescription(id, name, created)
 		End Function
 	#tag EndMethod
 

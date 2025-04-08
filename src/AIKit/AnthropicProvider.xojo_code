@@ -279,7 +279,7 @@ Implements AIKit.ChatProvider
 		  // 10 characters (YYYY-MM-DD).
 		  Var created As DateTime = DateTime.FromString(d.Value("created_at").StringValue.Left(10))
 		  
-		  Return New ModelDescription(id, name, created, "", "", 0, 0)
+		  Return New ModelDescription(id, name, created)
 		End Function
 	#tag EndMethod
 
