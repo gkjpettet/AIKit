@@ -701,7 +701,7 @@ Implements AIKit.ChatProvider
 		  mMessageTimeStop = DateTime.Now
 		  
 		  // Add the model's response to the conversation history.
-		  #Pragma Warning "Note that Gemini's assistant role is `model` unlike other LLMs"
+		  // Note that Gemini's assistant role is `model` unlike other LLMs which tend to use `assistant`.
 		  mOwner.Messages.Add(New AIKit.ChatMessage("model", theText))
 		  
 		  Return New AIKit.ChatResponse(theText, "", mMessageTimeStart, mMessageTimeStop, mInputTokenCount, _

@@ -111,9 +111,6 @@ Protected Class Chat
 		    Raise New InvalidArgumentException("Unsupported provider.")
 		  End Select
 		  
-		  // As this is the first usage of this chat object, set the previous provider to the current one.
-		  PreviousResponseProvider = provider
-		  
 		  // Has a valid API key been set for this provider?
 		  If MyProvider.RequiresAPIKey And Not MyProvider.IsValidAPIKey(apiKey) Then
 		    Raise New AIKit.APIException(MyProvider.Name + " requires an API key but the provided key " + _
@@ -245,10 +242,6 @@ Protected Class Chat
 
 	#tag Property, Flags = &h1
 		Protected MyProvider As AIKit.ChatProvider
-	#tag EndProperty
-
-	#tag Property, Flags = &h0, Description = 5468652070726F7669646572206F6620746865206C61737420726573706F6E736520696E207468697320636861742E20496620746869732069732074686520666972737420696E746572616374696F6E207468656E20746869732077696C6C206265207468652063757272656E742070726F76696465722E20
-		PreviousResponseProvider As AIKit.Providers
 	#tag EndProperty
 
 	#tag Property, Flags = &h0, Description = 49662054727565207468656E20746865206D6F64656C2073686F756C64207468696E6B206265666F726520616E73776572696E672E204E6F7420616C6C206D6F64656C7320737570706F727420746869732E
