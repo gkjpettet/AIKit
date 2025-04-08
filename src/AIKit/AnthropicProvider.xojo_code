@@ -768,6 +768,9 @@ Implements AIKit.ChatProvider
 		  mThinkingTimeStop = Nil
 		  mMessageTimeStop = DateTime.Now
 		  
+		  // Add the assistant's response to the conversation history.
+		  mOwner.Messages.Add(New AIKit.ChatMessage("assistant", messageContent))
+		  
 		  Return New AIKit.ChatResponse(messageContent, thinkingContent, mMessageTimeStart, mMessageTimeStop, _
 		  mInputTokenCount, mOutputTokenCount, mThinkingTimeStart, mThinkingTimeStop)
 		  

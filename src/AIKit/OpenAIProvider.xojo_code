@@ -4,6 +4,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C20612071756572792E
 		Sub Ask(what As String)
 		  /// Asynchronously asks the currently selected model a query.
+		  ///
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  AskWithMessage(New AIKit.ChatMessage("user", what))
 		  
@@ -13,12 +15,12 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B7320746865206D6F64656C20612071756572792E206074696D656F75746020697320746865206E756D626572206F66207365636F6E647320746F207761697420666F72206120726573706F6E73652E20412076616C7565206F66206030602077696C6C207761697420696E646566696E6974656C792E
 		Function Ask(what As String, timeout As Integer = 0) As AIKit.ChatResponse
 		  /// Synchronously asks the model a query.
-		  /// `timeout` is the number of seconds to wait for a response. A value of `0` will wait indefinitely.
+		  /// `timeout` is the number of seconds to wait for a response. 
+		  /// A value of `0` will wait indefinitely.
 		  ///
-		  /// Part of the AIKit.ChatProvider interface.
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  Return AskWithMessage(New AIKit.ChatMessage("user", what), timeout)
-		  
 		  
 		End Function
 	#tag EndMethod
@@ -85,7 +87,7 @@ Implements AIKit.ChatProvider
 		  payload.Value("stream") = True
 		  payload.Value("stream_options") = New Dictionary("include_usage" : True)
 		  
-		  // Send the request asynchronously to the Anthropic API.
+		  // Send the request asynchronously to the OpenAI API.
 		  Try
 		    ConfigureNewConnection
 		    
@@ -172,7 +174,7 @@ Implements AIKit.ChatProvider
 		  
 		  payload.Value("stream") = False
 		  
-		  // Send the request synchronously to the Anthropic API.
+		  // Send the request synchronously to the OpenAI API.
 		  Try
 		    Var connection As New URLConnection
 		    
@@ -210,6 +212,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 53796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F7669646573206F6E65206F72206D6F726520696D616765732E
 		Function AskWithPicture(what As String, timeout As Integer, ParamArray pics As Picture) As AIKit.ChatResponse
 		  /// Synchronously asks the currently selected model a query and provides one or more images.
+		  ///
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  If pics.Count = 0 Then
 		    Raise New AIKit.APIException("At least one picture must be supplied to the " + _
@@ -230,6 +234,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 4173796E6368726F6E6F75736C792061736B73207468652063757272656E746C792073656C6563746564206D6F64656C206120717565727920616E642070726F7669646573206174206C65617374206F6E6520696D6167652E
 		Sub AskWithPicture(what As String, ParamArray pics As Picture)
 		  /// Asynchronously asks the currently selected model a query and provides at least one image.
+		  ///
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  If pics.Count = 0 Then
 		    Raise New AIKit.APIException("At least one picture must be supplied to the " + _
@@ -280,6 +286,8 @@ Implements AIKit.ChatProvider
 
 	#tag Method, Flags = &h0
 		Sub Constructor(owner As AIKit.Chat, apiKey As String = "", endpoint As String = "")
+		  // Part of the AIKit.ChatProvider interface.
+		  
 		  #Pragma Unused endpoint
 		  
 		  mOwner = owner
@@ -306,6 +314,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 52657475726E73205472756520696620606B65796020697320612076616C6964204F70656E414920415049206B6579206F722046616C73652069662069742069736E27742E
 		Function IsValidAPIKey(apiKey As String) As Boolean
 		  /// Returns True if `key` is a valid OpenAI API key or False if it isn't.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
 		  
 		  Var connection As New URLConnection
 		  
@@ -325,6 +335,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 416C776179732072657475726E73205472756520626563617573652074686520726571756972656420656E64706F696E7420666F7220746865204F70656E4149204150492069732073746F72656420696E7465726E616C6C792E
 		Function IsValidEndpoint(endpoint As String) As Boolean
 		  /// Always returns True because the required endpoint for the OpenAI API is stored internally.
+		  ///
+		  /// Part of the AIKit.ChatProvider interface.
 		  
 		  #Pragma Unused endpoint
 		  
@@ -336,6 +348,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 52657475726E73205472756520696620746869732070726F76696465722068617320616E20617661696C61626C65206D6F64656C206E616D656420606D6F64656C4E616D65602E
 		Function IsValidModel(modelName As String) As Boolean
 		  /// Returns True if this provider has an available model named `modelName`.
+		  ///
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  Var models() As ModelDescription = Models
 		  
@@ -405,6 +419,8 @@ Implements AIKit.ChatProvider
 		Function Models() As AIKit.ModelDescription()
 		  /// Returns an array of all available models for this provider.
 		  /// May raise an APIException.
+		  ///
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  Var request As New URLConnection
 		  Var models() As ModelDescription
@@ -449,6 +465,8 @@ Implements AIKit.ChatProvider
 	#tag Method, Flags = &h0, Description = 546865206E616D65206F6620746869732070726F76696465722E
 		Function Name() As String
 		  /// The name of this provider.
+		  ///
+		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  Return "OpenAI"
 		  
@@ -618,6 +636,9 @@ Implements AIKit.ChatProvider
 		  // OpenAI doesn't return the thinking tokens.
 		  Var thinkingContent As String = ""
 		  
+		  // Add the assistant's response to the conversation history.
+		  mOwner.Messages.Add(New AIKit.ChatMessage("assistant", responseContent))
+		  
 		  Var response As New AIKit.ChatResponse(responseContent, thinkingContent, mMessageTimeStart, _
 		  mMessageTimeStop, mInputTokenCount, mOutputTokenCount, mThinkingTimeStart, mThinkingTimeStop)
 		  
@@ -711,9 +732,11 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 52657475726E73205472756520696620746869732070726F766964657220726571756972657320616E20415049206B65792E
+	#tag Method, Flags = &h0
 		Function RequiresAPIKey() As Boolean
-		  // A valid API is required to use the OpenAI API.
+		  // Part of the `AIKit.ChatProvider` interface.
+		  
+		  // A valid API key is required to use the OpenAI API.
 		  Return True
 		  
 		End Function
@@ -721,6 +744,8 @@ Implements AIKit.ChatProvider
 
 	#tag Method, Flags = &h0, Description = 52657475726E73205472756520696620746869732070726F766964657220726571756972657320616E20656E64706F696E7420746F206265207370656369666965642E
 		Function RequiresEndpoint() As Boolean
+		  // Part of the `AIKit.ChatProvider` interface.
+		  
 		  // The user doesn't need to specify an endpoint for the OpenAI API.
 		  Return False
 		End Function

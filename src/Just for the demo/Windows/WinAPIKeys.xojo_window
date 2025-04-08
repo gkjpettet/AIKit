@@ -11,7 +11,7 @@ Begin DesktopWindow WinAPIKeys
    HasMaximizeButton=   True
    HasMinimizeButton=   True
    HasTitleBar     =   True
-   Height          =   174
+   Height          =   196
    ImplicitInstance=   False
    MacProcID       =   0
    MaximumHeight   =   32000
@@ -124,7 +124,7 @@ Begin DesktopWindow WinAPIKeys
       TextAlignment   =   3
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   84
+      Top             =   118
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -164,7 +164,7 @@ Begin DesktopWindow WinAPIKeys
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   84
+      Top             =   118
       Transparent     =   False
       Underline       =   False
       ValidationMask  =   ""
@@ -184,7 +184,7 @@ Begin DesktopWindow WinAPIKeys
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   328
+      Left            =   330
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   False
@@ -196,7 +196,7 @@ Begin DesktopWindow WinAPIKeys
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   134
+      Top             =   156
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -267,7 +267,7 @@ Begin DesktopWindow WinAPIKeys
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   87
+      Top             =   121
       Transparent     =   True
       Visible         =   True
       Width           =   16
@@ -285,7 +285,7 @@ Begin DesktopWindow WinAPIKeys
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   236
+      Left            =   238
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   False
@@ -297,7 +297,7 @@ Begin DesktopWindow WinAPIKeys
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   134
+      Top             =   156
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -329,7 +329,7 @@ Begin DesktopWindow WinAPIKeys
       TextAlignment   =   3
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   52
+      Top             =   86
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -369,7 +369,7 @@ Begin DesktopWindow WinAPIKeys
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   52
+      Top             =   86
       Transparent     =   False
       Underline       =   False
       ValidationMask  =   ""
@@ -406,6 +406,114 @@ Begin DesktopWindow WinAPIKeys
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
+      Top             =   89
+      Transparent     =   True
+      Visible         =   True
+      Width           =   16
+   End
+   Begin DesktopLabel LabelGemini
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   20
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Multiline       =   False
+      Scope           =   2
+      Selectable      =   False
+      TabIndex        =   11
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   "Gemini"
+      TextAlignment   =   3
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   52
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   80
+   End
+   Begin DesktopTextField Gemini
+      AllowAutoDeactivate=   True
+      AllowFocusRing  =   True
+      AllowSpellChecking=   False
+      AllowTabs       =   False
+      BackgroundColor =   &cFFFFFF
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Format          =   ""
+      HasBorder       =   True
+      Height          =   22
+      Hint            =   "API Key"
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   112
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   True
+      LockTop         =   True
+      MaximumCharactersAllowed=   0
+      Password        =   False
+      ReadOnly        =   False
+      Scope           =   2
+      TabIndex        =   12
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   ""
+      TextAlignment   =   0
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   52
+      Transparent     =   False
+      Underline       =   False
+      ValidationMask  =   ""
+      Visible         =   True
+      Width           =   270
+   End
+   Begin DotLabel DotGemini
+      AllowAutoDeactivate=   True
+      AllowFocus      =   False
+      AllowFocusRing  =   False
+      AllowTabs       =   False
+      Backdrop        =   0
+      Caption         =   "Caption"
+      CaptionColor    =   &c000000
+      CondenseCaption =   True
+      DotBorderColor  =   &c008F0000
+      DotColor        =   &c00FF0000
+      DotDiameter     =   16.0
+      DotHasBorder    =   True
+      DotPadding      =   0
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   12
+      Height          =   16
+      Index           =   -2147483648
+      Left            =   394
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   13
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
       Top             =   55
       Transparent     =   True
       Visible         =   True
@@ -418,6 +526,7 @@ End
 	#tag Event
 		Sub Opening()
 		  Anthropic.Text = AIKit.Credentials.Anthropic
+		  Gemini.Text = AIKit.Credentials.Gemini
 		  Ollama.Text = AIKit.Credentials.Ollama
 		  OpenAI.Text = AIKit.Credentials.OpenAI
 		  
@@ -449,6 +558,10 @@ End
 		  // Anthropic.
 		  Var claude As New AIKit.AnthropicProvider(Nil, Anthropic.Text)
 		  SetDotStatus(DotAnthropic, claude.IsValidAPIKey(Anthropic.Text))
+		  
+		  // Gemini
+		  Var g As New AIKit.GeminiProvider(Nil, Gemini.Text)
+		  SetDotStatus(DotGemini, g.IsValidAPIKey(Gemini.Text))
 		  
 		  // Ollama.
 		  Var op As New AIKit.OllamaProvider(Nil, Ollama.Text)
@@ -485,6 +598,7 @@ End
 	#tag Event
 		Sub Pressed()
 		  AIKit.Credentials.Anthropic = Anthropic.Text
+		  AIKit.Credentials.Gemini = Gemini.Text
 		  AIKit.Credentials.Ollama = Ollama.Text
 		  AIKit.Credentials.OpenAI = OpenAI.Text
 		  

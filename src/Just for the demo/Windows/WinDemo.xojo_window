@@ -1023,6 +1023,7 @@ End
 		Sub Constructor()
 		  // Set up my API keys from the `private.json` file in the repo.
 		  AIKit.Credentials.Anthropic = KeySafe.AnthropicAPIKey
+		  AIKit.Credentials.Gemini = KeySafe.GeminiAPIKey
 		  AIKit.Credentials.Ollama = KeySafe.OllamaEndpoint
 		  AIKit.Credentials.OpenAI = KeySafe.OpenAIAPIKey
 		  
@@ -1140,6 +1141,9 @@ End
 		  Case AIKit.Providers.Anthropic
 		    apiKey = AIKit.Credentials.Anthropic
 		    
+		  Case AIKit.Providers.Gemini
+		    apiKey = AIKit.Credentials.Gemini
+		    
 		  Case AIKit.Providers.Ollama
 		    endpoint = AIKit.Credentials.Ollama
 		    
@@ -1172,6 +1176,9 @@ End
 			  Case AIKit.Providers.Anthropic
 			    Return AIKit.Credentials.Anthropic
 			    
+			  Case AIKit.Providers.Gemini
+			    Return AIKit.Credentials.Gemini
+			    
 			  Case AIKit.Providers.Ollama
 			    Return ""
 			    
@@ -1203,6 +1210,9 @@ End
 			  Case AIKit.Providers.Anthropic
 			    Return ""
 			    
+			  Case AIKit.Providers.Gemini
+			    Return ""
+			    
 			  Case AIKit.Providers.Ollama
 			    Return AIKit.Credentials.Ollama
 			    
@@ -1226,6 +1236,8 @@ End
 		Sub Opening()
 		  Me.AddRow("Anthropic")
 		  Me.RowTagAt(Me.LastAddedRowIndex) = AIKit.Providers.Anthropic
+		  Me.AddRow("Google Gemini")
+		  Me.RowTagAt(Me.LastAddedRowIndex) = AIKit.Providers.Gemini
 		  Me.AddRow("Ollama")
 		  Me.RowTagAt(Me.LastAddedRowIndex) = AIKit.Providers.Ollama
 		  Me.AddRow("OpenAI")

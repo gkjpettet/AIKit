@@ -35,6 +35,14 @@ Protected Module AIKit
 		      Return models
 		    End If
 		    
+		  Case AIKit.Providers.Gemini
+		    Var gemini As New GeminiProvider(Nil, apiKey, endpoint)
+		    If gemini.IsValidAPIKey(apiKey) Then
+		      Return gemini.Models
+		    Else
+		      Return models
+		    End If
+		    
 		  Case AIKit.Providers.Ollama
 		    Var ollama As New OllamaProvider(Nil, apiKey, endpoint)
 		    If ollama.IsValidEndpoint(endpoint) Then
@@ -111,12 +119,13 @@ Protected Module AIKit
 	#tag EndComputedProperty
 
 
-	#tag Constant, Name = VERSION, Type = String, Dynamic = False, Default = \"1.1.0", Scope = Protected
+	#tag Constant, Name = VERSION, Type = String, Dynamic = False, Default = \"1.2.0", Scope = Protected
 	#tag EndConstant
 
 
 	#tag Enum, Name = Providers, Flags = &h0
 		Anthropic
+		  Gemini
 		  Ollama
 		OpenAI
 	#tag EndEnum

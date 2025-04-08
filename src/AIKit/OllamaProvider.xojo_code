@@ -686,6 +686,9 @@ Implements AIKit.ChatProvider
 		  Var inputTokens As Integer = data.Lookup("prompt_eval_count", 0)
 		  Var outputTokens As Integer = data.Lookup("eval_count", 0)
 		  
+		  // Add the assistant's response to the conversation history.
+		  mOwner.Messages.Add(New AIKit.ChatMessage("assistant", messageContent))
+		  
 		  Return New AIKit.ChatResponse(messageContent, thinkingContent, mMessageTimeStart, mMessageTimeStop, _
 		  inputTokens, outputTokens, mThinkingTimeStart, mThinkingTimeStop)
 		  

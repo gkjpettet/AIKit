@@ -89,6 +89,12 @@ Protected Class Chat
 		    
 		    MyProvider = New AnthropicProvider(Self, apiKey)
 		    
+		  Case AIKit.Providers.Gemini
+		    // Default to the key stored in AIKit's credentials?
+		    If apiKey = "" Then apiKey = AIKit.Credentials.Gemini
+		    
+		    MyProvider = New GeminiProvider(Self, apiKey)
+		    
 		  Case AIKit.Providers.Ollama
 		    // Default to the endpoint stored in AIKit's credentials?
 		    If apiKey = "" And endpoint = "" Then endpoint = AIKit.Credentials.Ollama
