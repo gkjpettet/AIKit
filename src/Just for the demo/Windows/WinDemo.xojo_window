@@ -1257,9 +1257,11 @@ End
 		  // Update the models popup.
 		  UpdateModelsPopup(Me.RowTagAt(Me.SelectedRowIndex))
 		  
-		  SetupChat
-		  ' Chat.WithModel(PopupModel.SelectedRowText, _
-		  ' PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), APIKey, Endpoint)
+		  'SetupChat
+		  If Chat = Nil Then Return
+		  
+		  Chat.WithModel(PopupModel.SelectedRowText, _
+		  PopupProvider.RowTagAt(PopupProvider.SelectedRowIndex), APIKey, Endpoint)
 		  
 		  CheckBoxNoMaxTokenLimit.Enabled = Chat.SupportsUnlimitedTokens
 		End Sub

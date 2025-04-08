@@ -766,9 +766,10 @@ Implements AIKit.ChatProvider
 		  mConnection = Nil
 		  
 		  // Get rid of the message sent so the model doesn't repeat it's last response.
-		  If mOwner.Messages.Count > 0 Then
+		  If mOwner.Messages.Count > 0 And mOwner.Messages(mOwner.Messages.LastIndex).Role = "user" Then
 		    Call mOwner.Messages.Pop
 		  End If
+		  
 		End Sub
 	#tag EndMethod
 

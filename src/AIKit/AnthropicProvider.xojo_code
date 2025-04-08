@@ -47,10 +47,7 @@ Implements AIKit.ChatProvider
 		  mThinkingTimeStop = Nil
 		  
 		  // Prepare all messages for the API call.
-		  Var messages() As Dictionary
-		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(MessageAsDictionary(msg))
-		  Next msg
+		  Var messages() As Dictionary = PreparedMessages
 		  
 		  // Create the request payload.
 		  Var payload As New Dictionary
@@ -125,10 +122,7 @@ Implements AIKit.ChatProvider
 		  mThinkingTimeStop = Nil
 		  
 		  // Prepare all messages for the API call.
-		  Var messages() As Dictionary
-		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(MessageAsDictionary(msg))
-		  Next msg
+		  Var messages() As Dictionary = PreparedMessages
 		  
 		  // Create the request payload.
 		  Var payload As New Dictionary
@@ -414,6 +408,21 @@ Implements AIKit.ChatProvider
 		  /// The name of this provider.
 		  
 		  Return "Anthropic"
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 52657475726E7320616E206172726179206F662074686520636F6E766572736174696F6E2773206D6573736167657320726561647920666F7220757365207769746820746865204150492E
+		Private Function PreparedMessages() As Dictionary()
+		  /// Returns an array of the conversation's messages ready for use with the API.
+		  
+		  Var messages() As Dictionary
+		  
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(MessageAsDictionary(msg))
+		  Next msg
+		  
+		  Return messages
 		  
 		End Function
 	#tag EndMethod
@@ -920,7 +929,7 @@ Implements AIKit.ChatProvider
 		  mConnection = Nil
 		  
 		  // Get rid of the message sent so the model doesn't repeat it's last response.
-		  If mOwner.Messages.Count > 0 Then
+		  If mOwner.Messages.Count > 0 And mOwner.Messages(mOwner.Messages.LastIndex).Role = "user" Then
 		    Call mOwner.Messages.Pop
 		  End If
 		  
