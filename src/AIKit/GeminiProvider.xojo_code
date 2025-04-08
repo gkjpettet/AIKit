@@ -47,10 +47,7 @@ Implements AIKit.ChatProvider
 		  mMessageTimeStop = Nil
 		  
 		  // Prepare all messages for the API call.
-		  Var messages() As Dictionary
-		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(MessageAsDictionary(msg))
-		  Next msg
+		  Var messages() As Dictionary = PreparedMessages
 		  
 		  // Configuration object.
 		  Var config As New Dictionary
@@ -128,10 +125,7 @@ Implements AIKit.ChatProvider
 		  mMessageTimeStop = Nil
 		  
 		  // Prepare all messages for the API call.
-		  Var messages() As Dictionary
-		  For Each msg As AIKit.ChatMessage In mOwner.Messages
-		    messages.Add(MessageAsDictionary(msg))
-		  Next msg
+		  Var messages() As Dictionary = PreparedMessages
 		  
 		  // Configuration object.
 		  Var config As New Dictionary
@@ -260,7 +254,6 @@ Implements AIKit.ChatProvider
 		  mConnection = New URLConnection
 		  
 		  AddHandler mConnection.ContentReceived, AddressOf ContentReceivedDelegate
-		  
 		End Sub
 	#tag EndMethod
 
@@ -276,12 +269,13 @@ Implements AIKit.ChatProvider
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 48616E646C657320746865206172726976616C206F66206E657720646174612066726F6D20616E2061637469766520416E7468726F7069632041504920636F6E6E656374696F6E2E
+	#tag Method, Flags = &h21, Description = 48616E646C657320746865206172726976616C206F6620646174612066726F6D20616E206163746976652047656D696E692041504920636F6E6E656374696F6E2E20556E666F7274756E6174656C79207468652047656D696E692041504920646F65736E2774207265616C6C7920737570706F72742073747265616D696E67206F6E2061206368756E6B656420746F6B656E20626173697320736F20726573706F6E7365732077696C6C2061707065617220616C6C206174206F6E63652E
 		Private Sub ContentReceivedDelegate(sender As URLConnection, url As String, httpStatus As Integer, content As String)
 		  /// Handles the arrival of data from an active Gemini API connection.
-		  /// Unfortunately the Gemini API doesn't realy support streaming on a chunked token basis
+		  /// Unfortunately the Gemini API doesn't really support streaming on a chunked token basis
 		  /// so responses will appear all at once.
 		  
+		  #Pragma Unused sender
 		  #Pragma Unused url
 		  #Pragma Unused httpStatus
 		  
@@ -489,7 +483,8 @@ Implements AIKit.ChatProvider
 		Private Function MessageAsDictionary(m As AIKit.ChatMessage) As Dictionary
 		  /// Returns this message as a Dictionary for encoding as JSON.
 		  
-		  Var contents As New Dictionary("role" : m.Role)
+		  // Gemini uses `model` instead of `assistant` for the LLM's role.
+		  Var contents As New Dictionary("role" : If(m.Role = "assistant", "model", m.Role))
 		  
 		  Var parts() As Dictionary
 		  
@@ -569,6 +564,21 @@ Implements AIKit.ChatProvider
 		  /// Part of the `AIKit.ChatProvider` interface.
 		  
 		  Return "Google Gemini"
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 52657475726E7320616E206172726179206F66207468697320636F6E766572736174696F6E2773206D6573736167657320707265706172656420666F722073656E64696E6720746F20746865204150492E
+		Private Function PreparedMessages() As Dictionary()
+		  /// Returns an array of this conversation's messages prepared for sending to the API.
+		  
+		  Var messages() As Dictionary
+		  
+		  For Each msg As AIKit.ChatMessage In mOwner.Messages
+		    messages.Add(MessageAsDictionary(msg))
+		  Next msg
+		  
+		  Return messages
 		  
 		End Function
 	#tag EndMethod

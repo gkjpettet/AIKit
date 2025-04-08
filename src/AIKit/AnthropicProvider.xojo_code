@@ -339,7 +339,9 @@ Implements AIKit.ChatProvider
 		Private Function MessageAsDictionary(m As AIKit.ChatMessage) As Dictionary
 		  /// Returns this message as a Dictionary for encoding as JSON.
 		  
-		  Var d As New Dictionary("role" : m.Role)
+		  // This provider uses `assistant` for the LLM's role. Need to correct the edge case that the role
+		  // was set by a previous Gemini provider (which uses `model`).
+		  Var d As New Dictionary("role" : If(m.Role = "model", "assistant", m.Role))
 		  
 		  If m.Pictures.Count = 0 Then
 		    d.Value("content") = m.Content
