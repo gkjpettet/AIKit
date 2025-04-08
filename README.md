@@ -88,6 +88,7 @@ As demonstrated above, you can pass the required API key (or in the case of Olla
 // in `App.Opening` but it'll work so long as they are set before you
 // create any `Chat` instances.
 AIKit.Credentials.Anthropic = "your-anthropic-key"
+AIKit.Credentials.Gemini = "gemini-key"
 AIKit.Credentials.Ollama = "the-ollama-endpoint-url"
 AIKit.Credentials.OpenAI = "the-openai-key"
 
@@ -105,6 +106,7 @@ chatgpt.Ask("Are you smarter now?")
 `AIKit` uses the concept of _Providers_. A Provider is a vendor of an LLM. At present, the following providers are supported:
 
 - Anthropic (specifically Claude) via `AnthropicProvider`
+- Google's Gemini via `GeminiProvider`
 - Ollama (for locally hosted LLMs) via `OllamaProvider`
 - OpenAI (ChatGPT, o1/o3, etc) via `OpenAIProvider`
 
@@ -119,7 +121,8 @@ Included in the repo is the `AIKit` module and a demo application that allows yo
 {
 	"apiKeys" : {
 		"anthropic" : "your-key",
-		"openai" : "your-key"
+		"openai" : "your-key",
+		"gemini" : "your-key"
 	},
 	"endPoints" : {
 		"ollama" : "the endpoint, e.g http://localhost:11434/api/"
