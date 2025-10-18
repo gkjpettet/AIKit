@@ -9,5 +9,6 @@ Debug*/Debug*\ Libs
 *.rbuistate
 *.xojo_uistate
 *.obsolete*
-/ignore
+/ignore*
 .DS_Store
+src/ignore/private.json
